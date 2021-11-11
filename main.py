@@ -3,7 +3,8 @@ import random
 import os
 import math
 from Params import *
-from Turtle import *
+from Path import *
+from Sprites import *
 
 
 class Game:
@@ -14,8 +15,10 @@ class Game:
 
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
-        turtle = Turtle()
-        self.sprites = pygame.sprite.Group(turtle)
+        turtle = Player()
+        self.path = Path()
+        ball1 = Ball(GREEN, (20, 80), self.path.nodes)
+        self.sprites = pygame.sprite.Group(turtle, ball1)
 
     def start(self):
         isRunning = True
@@ -40,6 +43,7 @@ class Game:
 
     def update_display(self):
         self.screen.fill(BLACK)
+        self.path.draw(self.screen)
         self.sprites.draw(self.screen)
         pygame.display.update()
 
