@@ -2,72 +2,48 @@ import pygame
 import random
 import os
 import math
+from Params import *
+from Turtle import *
 
 
-
-WIDTH = 800
-HEIGHT = 650
-FPS = 30
-
-# Задаем цвета
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-
-
-class Turtle(pygame.sprite.Sprite):
+class Game:
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.original_image = pygame.transform.smoothscale(pygame.image.load("original.png"), (100, 100))
-        self.original_image.set_colorkey(BLACK)
+        pygame.init()
+        pygame.mixer.init()
+        pygame.display.set_caption("Zuma")
 
-        self.image = self.original_image
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.clock = pygame.time.Clock()
+        turtle = Turtle()
+        self.sprites = pygame.sprite.Group(turtle)
 
-        self.rect = self.image.get_rect(center=(WIDTH / 2, HEIGHT / 2))
+    def start(self):
+        isRunning = True
 
-        self.angle = 0
+        while isRunning:
 
-    def update(self):
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-        rel_x, rel_y = mouse_x - self.rect.x, mouse_y - self.rect.y
-        self.angle = (180 / math.pi) * (-math.atan2(rel_y, rel_x)) + 90
-        self.image = pygame.transform.rotate(self.original_image, self.angle)
-        self.rect = self.image.get_rect(center=self.rect.center)
+            self.clock.tick(FPS)
 
+            for event in pygame.event.get():
+                isRunning = self.handle_event(event)
 
-# Создаем игру и окно
-pygame.init()
-pygame.mixer.init()
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("My Game")
-clock = pygame.time.Clock()
-game_folder = os.path.dirname(__file__)
-# img_folder = os.path.join(game_folder, 'img')
-player_img = pygame.image.load(os.path.join(game_folder, 'original.png')).convert()
-all_sprites = pygame.sprite.Group()
-player = Turtle()
-all_sprites.add(player)
+            self.sprites.update()
+            self.update_display()
 
-# Цикл игры
-running = True
-while running:
-    # Держим цикл на правильной скорости
-    clock.tick(FPS)
-    # Ввод процесса (события)
-    for event in pygame.event.get():
-        # check for closing window
+        pygame.quit()
+
+    @staticmethod
+    def handle_event(event):
         if event.type == pygame.QUIT:
-            running = False
+            return False
+        return True
 
-    # Обновление
-    all_sprites.update()
+    def update_display(self):
+        self.screen.fill(BLACK)
+        self.sprites.draw(self.screen)
+        pygame.display.update()
 
-    # Рендеринг
-    screen.fill(BLACK)
-    all_sprites.draw(screen)
-    # После отрисовки всего, переворачиваем экран
-    pygame.display.update()
 
-pygame.quit()
+if __name__ == '__main__':
+    game = Game()
+    game.start()
