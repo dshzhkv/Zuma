@@ -17,20 +17,15 @@ class BallGenerator:
     def generate(self):
         if len(self.balls) < self.number:
             if len(self.balls) == 0:
-                self.balls.append(Ball(random.choice(self.colors),
-                                       self.path.start, self.path.nodes))
+                self.balls.append(Ball(random.choice(self.colors), self.path))
             if self.balls[-1].rect.center[0] == 2 * BALL_RADIUS:
-                self.balls.append(Ball(random.choice(self.colors),
-                                       self.path.start, self.path.nodes))
+                self.balls.append(Ball(random.choice(self.colors), self.path))
 
     def update(self):
         for ball in self.balls:
             ball.update()
-            if ball.rect.center == self.path.end:
-                return False
-        return True
 
-    def draw(self, screen):
+    def draw_balls(self, screen):
         for ball in self.balls:
             ball.draw(screen)
 
@@ -47,9 +42,8 @@ class Game:
         self.player = Player()
         self.path = Path()
         self.ball_generator = BallGenerator(self.path, 50)
-        self.sprites = pygame.sprite.Group(self.player)
 
-    def start(self):
+    def play(self):
         isRunning = True
 
         while isRunning:
@@ -60,30 +54,28 @@ class Game:
             for event in pygame.event.get():
                 isRunning = self.handle_event(event)
 
-            isRunning = isRunning and self.update_sprites()
+            self.update_sprites()
             self.update_display()
 
         pygame.quit()
 
-    @staticmethod
-    def handle_event(event):
+    def handle_event(self, event):
         if event.type == pygame.QUIT:
             return False
-
         return True
 
     def update_sprites(self):
-        self.sprites.update()
-        return self.ball_generator.update()
+        self.player.update()
+        self.ball_generator.update()
 
     def update_display(self):
         self.screen.fill(BLACK)
         self.path.draw(self.screen)
-        self.ball_generator.draw(self.screen)
-        self.sprites.draw(self.screen)
+        self.ball_generator.draw_balls(self.screen)
+        self.player.draw(self.screen)
         pygame.display.update()
 
 
 if __name__ == '__main__':
     game = Game()
-    game.start()
+    game.play()

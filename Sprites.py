@@ -1,4 +1,5 @@
 import pygame
+import random
 import math
 from enum import Enum
 from Params import *
@@ -12,17 +13,18 @@ class Direction(Enum):
 
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, color, center, path):
+    def __init__(self, color, path):
         pygame.sprite.Sprite.__init__(self)
 
         self.color = color
 
+        self.direction = Direction.Right
+        self.step = 5
+        self.path = path
+
         self.image = pygame.Surface(BALL_SIZE)
         self.image.set_colorkey(BLACK)
-        self.rect = self.image.get_rect(center=center)
-
-        self.direction = Direction.Right
-        self.path = path
+        self.rect = self.image.get_rect(center=self.path.start)
 
     def update(self):
         self.move()
@@ -30,16 +32,20 @@ class Ball(pygame.sprite.Sprite):
 
     def move(self):
         if self.direction == Direction.Right:
-            self.rect.center = (self.rect.center[0] + 5, self.rect.center[1])
+            self.rect.center = (self.rect.center[0] + self.step,
+                                self.rect.center[1])
         elif self.direction == Direction.Down:
-            self.rect.center = (self.rect.center[0], self.rect.center[1] + 5)
+            self.rect.center = (self.rect.center[0],
+                                self.rect.center[1] + self.step)
         elif self.direction == Direction.Left:
-            self.rect.center = (self.rect.center[0] - 5, self.rect.center[1])
+            self.rect.center = (self.rect.center[0] - self.step,
+                                self.rect.center[1])
         else:
-            self.rect.center = (self.rect.center[0], self.rect.center[1] - 5)
+            self.rect.center = (self.rect.center[0],
+                                self.rect.center[1] - self.step)
 
     def change_direction(self):
-        if self.rect.center in self.path:
+        if self.rect.center in self.path.nodes:
             if self.direction == Direction.Up:
                 self.direction = Direction.Right
             else:
@@ -52,6 +58,7 @@ class Ball(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
+
         self.original_image = pygame.transform.smoothscale(
             pygame.image.load("original.png"), TURTLE_SIZE)
         self.original_image.set_colorkey(BLACK)
@@ -68,3 +75,6 @@ class Player(pygame.sprite.Sprite):
         self.angle = (180 / math.pi) * (-math.atan2(rel_y, rel_x)) + 90
         self.image = pygame.transform.rotate(self.original_image, self.angle)
         self.rect = self.image.get_rect(center=self.rect.center)
+
+    def draw(self, screen):
+        screen.blit(self.image, (self.rect.x, self.rect.y))
