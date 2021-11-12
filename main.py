@@ -7,6 +7,34 @@ from Path import *
 from Sprites import *
 
 
+class BallGenerator:
+    def __init__(self, path, number):
+        self.path = path
+        self.colors = [BLUE, RED, GREEN, YELLOW]
+        self.balls = []
+        self.number = number
+
+    def generate(self):
+        if len(self.balls) < self.number:
+            if len(self.balls) == 0:
+                self.balls.append(Ball(random.choice(self.colors),
+                                       self.path.start, self.path.nodes))
+            if self.balls[-1].rect.center[0] == 2 * BALL_RADIUS:
+                self.balls.append(Ball(random.choice(self.colors),
+                                       self.path.start, self.path.nodes))
+
+    def update(self):
+        for ball in self.balls:
+            ball.update()
+            if ball.rect.center == self.path.end:
+                ball.kill()
+                self.balls.remove(ball)
+
+    def draw(self, screen):
+        for ball in self.balls:
+            ball.draw(screen)
+
+
 class Game:
     def __init__(self):
         pygame.init()
@@ -15,22 +43,23 @@ class Game:
 
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
-        turtle = Player()
+        self.player = Player()
         self.path = Path()
-        ball1 = Ball(GREEN, (20, 80), self.path.nodes)
-        self.sprites = pygame.sprite.Group(turtle, ball1)
+        self.ball_generator = BallGenerator(self.path, 50)
+        self.sprites = pygame.sprite.Group(self.player)
 
     def start(self):
         isRunning = True
 
         while isRunning:
+            self.ball_generator.generate()
 
             self.clock.tick(FPS)
 
             for event in pygame.event.get():
                 isRunning = self.handle_event(event)
 
-            self.sprites.update()
+            self.update_sprites()
             self.update_display()
 
         pygame.quit()
@@ -41,9 +70,14 @@ class Game:
             return False
         return True
 
+    def update_sprites(self):
+        self.sprites.update()
+        self.ball_generator.update()
+
     def update_display(self):
         self.screen.fill(BLACK)
         self.path.draw(self.screen)
+        self.ball_generator.draw(self.screen)
         self.sprites.draw(self.screen)
         pygame.display.update()
 

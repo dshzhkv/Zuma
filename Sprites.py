@@ -14,10 +14,13 @@ class Direction(Enum):
 class Ball(pygame.sprite.Sprite):
     def __init__(self, color, center, path):
         pygame.sprite.Sprite.__init__(self)
+
+        self.color = color
+
         self.image = pygame.Surface(BALL_SIZE)
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect(center=center)
-        pygame.draw.circle(self.image, color, (20, 20), BALL_RADIUS)
+
         self.direction = Direction.Right
         self.path = path
 
@@ -37,12 +40,13 @@ class Ball(pygame.sprite.Sprite):
 
     def change_direction(self):
         if self.rect.center in self.path:
-            if self.rect.center == self.path[-1]:
-                self.kill()
             if self.direction == Direction.Up:
                 self.direction = Direction.Right
             else:
                 self.direction = Direction(self.direction.value + 1)
+
+    def draw(self, screen):
+        pygame.draw.circle(screen, self.color, self.rect.center, BALL_RADIUS)
 
 
 class Player(pygame.sprite.Sprite):
