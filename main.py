@@ -27,8 +27,8 @@ class BallGenerator:
         for ball in self.balls:
             ball.update()
             if ball.rect.center == self.path.end:
-                ball.kill()
-                self.balls.remove(ball)
+                return False
+        return True
 
     def draw(self, screen):
         for ball in self.balls:
@@ -43,6 +43,7 @@ class Game:
 
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
+
         self.player = Player()
         self.path = Path()
         self.ball_generator = BallGenerator(self.path, 50)
@@ -59,7 +60,7 @@ class Game:
             for event in pygame.event.get():
                 isRunning = self.handle_event(event)
 
-            self.update_sprites()
+            isRunning = isRunning and self.update_sprites()
             self.update_display()
 
         pygame.quit()
@@ -68,11 +69,12 @@ class Game:
     def handle_event(event):
         if event.type == pygame.QUIT:
             return False
+
         return True
 
     def update_sprites(self):
         self.sprites.update()
-        self.ball_generator.update()
+        return self.ball_generator.update()
 
     def update_display(self):
         self.screen.fill(BLACK)
