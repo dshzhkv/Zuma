@@ -19,11 +19,10 @@ class Ball(pygame.sprite.Sprite):
         self.color = color
 
         self.direction = Direction.Right
-        self.step = 5
+        self.speed = 5
         self.path = path
 
         self.image = pygame.Surface(BALL_SIZE)
-        self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect(center=self.path.start)
 
     def update(self):
@@ -32,17 +31,17 @@ class Ball(pygame.sprite.Sprite):
 
     def move(self):
         if self.direction == Direction.Right:
-            self.rect.center = (self.rect.center[0] + self.step,
+            self.rect.center = (self.rect.center[0] + self.speed,
                                 self.rect.center[1])
         elif self.direction == Direction.Down:
             self.rect.center = (self.rect.center[0],
-                                self.rect.center[1] + self.step)
+                                self.rect.center[1] + self.speed)
         elif self.direction == Direction.Left:
-            self.rect.center = (self.rect.center[0] - self.step,
+            self.rect.center = (self.rect.center[0] - self.speed,
                                 self.rect.center[1])
         else:
             self.rect.center = (self.rect.center[0],
-                                self.rect.center[1] - self.step)
+                                self.rect.center[1] - self.speed)
 
     def change_direction(self):
         if self.rect.center in self.path.nodes:
@@ -50,6 +49,34 @@ class Ball(pygame.sprite.Sprite):
                 self.direction = Direction.Right
             else:
                 self.direction = Direction(self.direction.value + 1)
+
+    def draw(self, screen):
+        pygame.draw.circle(screen, self.color, self.rect.center, BALL_RADIUS)
+
+
+class ShootingBall(pygame.sprite.Sprite):
+    def __init__(self, color):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.color = color
+
+        self.image = pygame.Surface(BALL_SIZE)
+        self.rect = self.image.get_rect(center=SCREEN_CENTER)
+
+        self.target = (0, 0)
+        self.angle = 0
+        self.speed = 10
+
+    def set_target(self, target):
+        self.target = (target[0] - self.rect.center[0],
+                       target[1] - self.rect.center[1])
+        length = math.hypot(*self.target)
+        self.target = (self.target[0] / length, self.target[1] / length)
+        self.angle = math.degrees(math.atan2(-self.target[1], self.target[0]))
+
+    def update(self):
+        self.rect.center = (self.rect.center[0] + self.target[0] * self.speed,
+                            self.rect.center[1] + self.target[1] * self.speed)
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, self.rect.center, BALL_RADIUS)
@@ -65,7 +92,7 @@ class Player(pygame.sprite.Sprite):
 
         self.image = self.original_image
 
-        self.rect = self.image.get_rect(center=SCREEN_CENTRE)
+        self.rect = self.image.get_rect(center=SCREEN_CENTER)
 
         self.angle = 0
 
