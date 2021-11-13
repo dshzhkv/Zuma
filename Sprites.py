@@ -13,7 +13,7 @@ class Direction(Enum):
 
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, color, path):
+    def __init__(self, color, center, path):
         pygame.sprite.Sprite.__init__(self)
 
         self.color = color
@@ -21,28 +21,19 @@ class Ball(pygame.sprite.Sprite):
         self.direction = Direction.Right
         self.speed = 5
         self.path = path
+        self.pos_in_path = 0
 
         self.image = pygame.Surface(BALL_SIZE)
-        self.rect = self.image.get_rect(center=self.path.start)
+        self.rect = self.image.get_rect(center=center)
 
     def update(self):
         self.move()
-        self.change_direction()
 
     def move(self):
-        if self.direction == Direction.Right:
-            self.rect.center = (self.rect.center[0] + self.speed,
-                                self.rect.center[1])
-        elif self.direction == Direction.Down:
-            self.rect.center = (self.rect.center[0],
-                                self.rect.center[1] + self.speed)
-        elif self.direction == Direction.Left:
-            self.rect.center = (self.rect.center[0] - self.speed,
-                                self.rect.center[1])
-        else:
-            self.rect.center = (self.rect.center[0],
-                                self.rect.center[1] - self.speed)
+        self.pos_in_path += 1
+        self.rect.center = self.path.nodes[self.pos_in_path]
 
+    # change
     def change_direction(self):
         if self.rect.center in self.path.nodes:
             if self.direction == Direction.Up:

@@ -18,7 +18,8 @@ class BallGenerator:
         if len(self.balls) < self.number:
             if len(self.balls) == 0 or \
                     self.balls[-1].rect.center[0] == 2 * BALL_RADIUS:
-                self.balls.append(Ball(random.choice(self.colors), self.path))
+                self.balls.append(Ball(random.choice(self.colors),
+                                       self.path.start, self.path))
 
     def update(self):
         for ball in self.balls:
@@ -34,6 +35,21 @@ class BallGenerator:
     def destroy_ball(self, ball):
         ball.kill()
         self.balls.remove(ball)
+
+    # неправильно работает
+    def insert_ball(self, ball, index):
+        if index == len(self.balls):
+            center = (self.balls[-1].rect.center[0] - 2 * BALL_RADIUS,
+                      self.balls[-1].rect.center[1])
+        else:
+            center = self.balls[index].rect.center
+            for i in range(index, 0, -1):
+                for _ in range(2 * BALL_RADIUS // 5):
+                    self.balls[i].move(5)
+            for i in range(index, len(self.balls)):
+                for _ in range(2 * BALL_RADIUS // 5):
+                    self.balls[i].move(-5)
+        self.balls.insert(index, Ball(ball.color, center, self.path))
 
 
 class ShootingManager:
@@ -76,10 +92,15 @@ class ShootingManager:
                 break
 
     def handle_hit(self, ball):
-        if ball.color == self.shooting_ball.color:
-            ball_index = self.ball_generator.balls.index(ball)
-            if self.is_hit_the_chain(ball_index):
-                self.destroy_chain(ball_index)
+        ball_index = self.ball_generator.balls.index(ball)
+        if ball.color == self.shooting_ball.color and \
+                self.is_hit_the_chain(ball_index):
+            self.destroy_chain(ball_index)
+        # else:
+        #     self.insert_ball(ball, ball_index - 1)
+
+    def insert_ball(self, ball, ball_index):
+        self.ball_generator.insert_ball(ball, ball_index)
 
     def is_hit_the_chain(self, ball_index):
         return self.ball_generator.balls[ball_index - 1].color == \
@@ -118,7 +139,7 @@ class Game:
 
         self.player = Player()
         self.path = Path()
-        self.ball_generator = BallGenerator(self.path, 50)
+        self.ball_generator = BallGenerator(self.path, 10)
         self.shooting_manager = ShootingManager(self.ball_generator)
 
     def play(self):
