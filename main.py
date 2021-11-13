@@ -93,18 +93,16 @@ class ShootingManager:
             self.ball_generator.destroy_ball(ball)
 
     def collect_chain(self, ball_index):
-        chain = []
-        i = ball_index - 1
-        while self.ball_generator.balls[i].color == self.shooting_ball.color:
-            chain.append(self.ball_generator.balls[i])
-            i -= 1
-        i = ball_index + 1
-        while self.ball_generator.balls[i].color == self.shooting_ball.color:
-            chain.append(self.ball_generator.balls[i])
-            i += 1
-        chain.append(self.ball_generator.balls[ball_index])
+        return self.collect_half_chain(ball_index - 1, -1) + \
+              self.collect_half_chain(ball_index + 1, 1) + \
+              [self.ball_generator.balls[ball_index]]
 
-        return chain
+    def collect_half_chain(self, i, delta):
+        half_chain = []
+        while self.ball_generator.balls[i].color == self.shooting_ball.color:
+            half_chain.append(self.ball_generator.balls[i])
+            i += delta
+        return half_chain
 
     # endregion
 
