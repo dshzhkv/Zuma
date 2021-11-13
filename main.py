@@ -59,7 +59,8 @@ class ShootingManager:
         if self.shooting_ball is not None:
             self.shooting_ball.draw(screen)
 
-    #region update
+    # region update
+
     def update(self):
         self.charged_ball.update()
         if self.shooting_ball is not None:
@@ -87,19 +88,25 @@ class ShootingManager:
                self.shooting_ball.color
 
     def destroy_chain(self, ball_index):
-        balls_to_destroy = []
+        chain = self.collect_chain(ball_index)
+        for ball in chain:
+            self.ball_generator.destroy_ball(ball)
+
+    def collect_chain(self, ball_index):
+        chain = []
         i = ball_index - 1
         while self.ball_generator.balls[i].color == self.shooting_ball.color:
-            balls_to_destroy.append(self.ball_generator.balls[i])
+            chain.append(self.ball_generator.balls[i])
             i -= 1
         i = ball_index + 1
         while self.ball_generator.balls[i].color == self.shooting_ball.color:
-            balls_to_destroy.append(self.ball_generator.balls[i])
+            chain.append(self.ball_generator.balls[i])
             i += 1
-        balls_to_destroy.append(self.ball_generator.balls[ball_index])
-        for ball in balls_to_destroy:
-            self.ball_generator.destroy_ball(ball)
-    #endregion
+        chain.append(self.ball_generator.balls[ball_index])
+
+        return chain
+
+    # endregion
 
 
 class Game:
