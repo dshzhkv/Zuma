@@ -95,3 +95,24 @@ class Player(pygame.sprite.Sprite):
 
     def draw(self, screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))
+
+
+class Finish(pygame.sprite.Sprite):
+    def __init__(self, path, balls):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.balls = balls
+
+        self.isFinished = False
+
+        self.image = pygame.Surface((60, 60))
+        self.rect = self.image.get_rect(center=path.end)
+
+    def update(self):
+        for ball in self.balls:
+            if self.rect.colliderect(ball.rect):
+                self.isFinished = True
+                break
+
+    def draw(self, screen):
+        pygame.draw.circle(screen, WHITE, self.rect.center, 30)

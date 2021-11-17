@@ -21,6 +21,7 @@ class Game:
         self.player = Player()
         self.path = Path()
         self.ball_generator = BallGenerator(self.path, 10)
+        self.finish = Finish(self.path, self.ball_generator.balls)
         self.shooting_manager = ShootingManager(self.ball_generator)
 
     def play(self):
@@ -32,9 +33,14 @@ class Game:
             self.clock.tick(FPS)
 
             for event in pygame.event.get():
-                isRunning = self.handle_event(event)
+                if event.type == pygame.QUIT:
+                    isRunning = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    self.shooting_manager.shoot(pygame.mouse.get_pos())
 
             self.update_sprites()
+            if self.finish.isFinished:
+                isRunning = False
             self.update_display()
 
         pygame.quit()
@@ -50,6 +56,7 @@ class Game:
         self.player.update()
         self.ball_generator.update()
         self.shooting_manager.update()
+        self.finish.update()
 
     def update_display(self):
         self.screen.fill(BLACK)
@@ -59,6 +66,7 @@ class Game:
         self.ball_generator.draw(self.screen)
         self.player.draw(self.screen)
         self.shooting_manager.draw(self.screen)
+        self.finish.draw(self.screen)
 
         pygame.display.update()
 
