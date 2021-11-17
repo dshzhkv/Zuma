@@ -19,18 +19,17 @@ class Ball(pygame.sprite.Sprite):
         self.color = color
 
         self.direction = Direction.Right
-        self.speed = 5
         self.path = path
-        self.pos_in_path = 0
+        self.pos_in_path = self.path.nodes.index(center)
 
         self.image = pygame.Surface(BALL_SIZE)
         self.rect = self.image.get_rect(center=center)
 
     def update(self):
-        self.move()
+        self.move(1)
 
-    def move(self):
-        self.pos_in_path += 1
+    def move(self, steps):
+        self.pos_in_path += steps
         self.rect.center = self.path.nodes[self.pos_in_path]
 
     # change
