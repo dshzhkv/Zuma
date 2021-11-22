@@ -15,8 +15,8 @@ class BallGenerator:
         if self.number_of_generated < self.number_to_generate:
             if len(self.balls) == 0 or \
                     self.balls[-1].rect.center[0] == 2 * BALL_RADIUS:
-                self.balls.append(Ball(random.choice(self.colors),
-                                       self.path.start, self.path))
+                self.balls.insert(0, Ball(random.choice(self.colors),
+                                          self.path.start, self.path))
                 self.number_of_generated += 1
 
     def update(self):
@@ -34,25 +34,34 @@ class BallGenerator:
         pass
 
     def insert(self, index, shooting_ball):
-        if index == 0:
+        if index == len(self.balls) - 1:
             center = self.count_center(index)
             ball = Ball(shooting_ball.color, center, self.path)
         else:
-            ball = Ball(shooting_ball.color, self.balls[index - 1].rect.center,
+            ball = Ball(shooting_ball.color, self.balls[index + 1].rect.center,
                         self.path)
-        for i in range(index - 1, -1, -1):
+        for i in range(index + 1, len(self.balls)):
             self.balls[i].move(8)
-        self.balls.insert(index, ball)
+        self.balls.insert(index + 1, ball)
 
     def destroy(self, chain):
-        chain_start_index = self.balls.index(chain[0])
-        chain_end_index = self.balls.index(chain[-1])
+        chain_tail = self.balls.index(chain[0])
+        chain_head = self.balls.index(chain[-1])
 
         self.remove_balls(chain)
-        if chain_start_index != 0 and chain_end_index != len(self.balls) + \
-                len(chain) - 1 and self.balls[chain_start_index - 1].color == \
-                self.balls[chain_start_index].color:
-            self.join_balls(chain_start_index - 1, chain_start_index)
+
+        if self.is_chain(chain_tail, chain_head):
+            self.join_balls(chain_tail, chain_tail - 1)
+
+    def is_chain(self, chain_tail, chain_head):
+        if len(self.balls) == 1 or chain_tail == 0 or chain_head == \
+                len(self.balls) + chain_head - chain_tail:
+            return False
+
+        if self.balls[chain_tail - 1].color == self.balls[chain_tail].color:
+            return True
+
+        return False
 
     def join_balls(self, head_index, tail_index):
         color = self.balls[head_index].color

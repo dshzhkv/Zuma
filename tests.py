@@ -11,34 +11,42 @@ class TestInsert(TestCase):
     path = Path()
 
     def test_insertBallInMiddle_length_changed(self):
-        shooting_ball = ShootingBall(GREEN)
+        shooting_ball = ShootingBall(RED)
         ball_generator = self.create_ball_generator()
         ball_generator.insert(1, shooting_ball)
         assert len(ball_generator.balls) == 4
 
     def test_insertBallInMiddle(self):
-        shooting_ball = ShootingBall(GREEN)
+        shooting_ball = ShootingBall(RED)
         ball_generator = self.create_ball_generator()
         ball_generator.insert(1, shooting_ball)
 
         assert self.are_balls_correct(ball_generator,
-                                      [BLUE, shooting_ball.color,
-                                       GREEN, YELLOW]) is True
+                                      [YELLOW, GREEN, shooting_ball.color,
+                                       BLUE]) is True
 
     def test_insertBallInHead(self):
-        shooting_ball = ShootingBall(GREEN)
+        shooting_ball = ShootingBall(RED)
         ball_generator = self.create_ball_generator()
-        ball_generator.insert(0, shooting_ball)
+        ball_generator.insert(2, shooting_ball)
 
         assert self.are_balls_correct(ball_generator,
-                                      [shooting_ball.color, BLUE,
-                                       GREEN, YELLOW]) is True
+                                      [YELLOW, GREEN,
+                                       BLUE, shooting_ball.color]) is True
+
+    def test_insertBallInTail(self):
+        shooting_ball = ShootingBall(RED)
+        ball_generator = self.create_ball_generator()
+        ball_generator.insert(0, shooting_ball)
+        assert self.are_balls_correct(ball_generator,
+                                      [YELLOW, shooting_ball.color, GREEN,
+                                       BLUE]) is True
 
     def create_ball_generator(self):
         ball_generator = BallGenerator(self.path, 3)
-        ball_generator.balls = [Ball(BLUE, (120, 80), self.path),
+        ball_generator.balls = [Ball(YELLOW, (40, 80), self.path),
                                 Ball(GREEN, (80, 80), self.path),
-                                Ball(YELLOW, (40, 80), self.path)]
+                                Ball(BLUE, (120, 80), self.path)]
         return ball_generator
 
     @staticmethod
@@ -48,10 +56,10 @@ class TestInsert(TestCase):
         ball2 = ball_generator.balls[2]
         ball3 = ball_generator.balls[3]
 
-        return (ball0.color == colors[0] and ball0.rect.center == (160, 80)) \
-            and (ball1.color == colors[1] and ball1.rect.center == (120, 80)) \
-            and (ball2.color == colors[2] and ball2.rect.center == (80, 80)) \
-            and (ball3.color == colors[3] and ball3.rect.center == (40, 80))
+        return (ball0.color == colors[0] and ball0.rect.center == (40, 80)) \
+            and (ball1.color == colors[1] and ball1.rect.center == (80, 80)) \
+            and (ball2.color == colors[2] and ball2.rect.center == (120, 80)) \
+            and (ball3.color == colors[3] and ball3.rect.center == (160, 80))
 
 
 class TestHitChain(TestCase):
@@ -99,9 +107,9 @@ class TestHitChain(TestCase):
     def set_up_shooting_manager(balls_colors, shooting_ball_color):
         path = Path()
         ball_generator = BallGenerator(path, 3)
-        ball_generator.balls = [Ball(balls_colors[0], (120, 80), path),
+        ball_generator.balls = [Ball(balls_colors[0], (40, 80), path),
                                 Ball(balls_colors[1], (80, 80), path),
-                                Ball(balls_colors[2], (40, 80), path)]
+                                Ball(balls_colors[2], (120, 80), path)]
         shooting_manager = ShootingManager(ball_generator)
         shooting_manager.shooting_ball = ShootingBall(shooting_ball_color)
         return shooting_manager
@@ -171,15 +179,37 @@ class TestDestroy(TestCase):
         ball_generator = self.set_up_ball_generator([GREEN, BLUE, BLUE, GREEN])
         ball_generator.destroy(
             [ball_generator.balls[1], ball_generator.balls[2]])
-        assert ball_generator.balls[0].rect.center == (40, 80)
+        assert ball_generator.balls[1].rect.center == (80, 80)
+
+    def test_different_color_balls_not_moved(self):
+        ball_generator = self.set_up_ball_generator([GREEN, BLUE, BLUE, RED])
+        ball_generator.destroy(
+            [ball_generator.balls[1], ball_generator.balls[2]])
+        assert (ball_generator.balls[0].rect.center == (40, 80) and
+                ball_generator.balls[1].rect.center == (160, 80)) is True
+
+    def test_ChainInTail_ballsNotMoved(self):
+        ball_generator = self.set_up_ball_generator([BLUE, BLUE, GREEN, RED])
+        ball_generator.destroy(
+            [ball_generator.balls[0], ball_generator.balls[1]])
+        assert (ball_generator.balls[0].rect.center == (120, 80) and
+                ball_generator.balls[1].rect.center == (160, 80)) is True
+
+    def test_ChainInHead_ballsNotMoved(self):
+        ball_generator = self.set_up_ball_generator([GREEN, RED, BLUE, BLUE])
+        ball_generator.destroy(
+            [ball_generator.balls[2], ball_generator.balls[3]])
+        assert (ball_generator.balls[0].rect.center == (40, 80) and
+                ball_generator.balls[1].rect.center == (80, 80)) is True
+
 
     @staticmethod
     def set_up_ball_generator(balls_colors):
         path = Path()
         ball_generator = BallGenerator(path, 4)
-        ball_generator.balls = [Ball(balls_colors[0], (120, 80), path),
+        ball_generator.balls = [Ball(balls_colors[0], (40, 80), path),
                                 Ball(balls_colors[1], (80, 80), path),
-                                Ball(balls_colors[2], (40, 80), path),
-                                Ball(balls_colors[3], (0, 80), path)]
+                                Ball(balls_colors[2], (120, 80), path),
+                                Ball(balls_colors[3], (160, 80), path)]
         return ball_generator
 
