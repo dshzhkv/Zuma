@@ -37,17 +37,20 @@ class ShootingManager:
         for i in range(len(self.ball_generator.balls)):
             ball = self.ball_generator.balls[i]
             if self.shooting_ball.rect.colliderect(ball.rect):
-                if self.is_hit_chain(i):
-                    self.ball_generator.destroy(self.collect_chain(i))
-                    if len(self.ball_generator.balls) == 0:
-                        self.win = True
-                        break
-                    else:
-                        self.recharge()
-                else:
-                    self.ball_generator.insert(i, self.shooting_ball)
+                self.handle_hit(i)
                 self.shooting_ball = None
                 break
+
+    def handle_hit(self, ball_index):
+        if self.is_hit_chain(ball_index):
+            self.ball_generator.destroy(self.collect_chain(ball_index))
+            if len(self.ball_generator.balls) == 0:
+                self.win = True
+                return
+            else:
+                self.recharge()
+        else:
+            self.ball_generator.insert(ball_index, self.shooting_ball)
 
     def is_hit_chain(self, ball_index):
         if len(self.ball_generator.balls) == 1:

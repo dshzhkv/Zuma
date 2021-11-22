@@ -20,8 +20,10 @@ class BallGenerator:
                 self.number_of_generated += 1
 
     def update(self):
-        for ball in self.balls:
-            ball.update()
+        for i in range(len(self.balls)):
+            self.balls[i].update()
+            if not self.balls[i].can_move and (i == 0 or (self.balls[i - 1].can_move and self.balls[i].rect.center == self.count_center(i - 1))):
+                self.balls[i].can_move = True
 
     def draw(self, screen):
         for ball in self.balls:
@@ -37,6 +39,7 @@ class BallGenerator:
         else:
             ball = Ball(shooting_ball.color, self.balls[index + 1].rect.center,
                         self.path)
+        ball.can_move = self.balls[index].can_move
         for i in range(index + 1, len(self.balls)):
             self.balls[i].move(2 * BALL_RADIUS // self.path.step)
         self.balls.insert(index + 1, ball)
@@ -49,6 +52,8 @@ class BallGenerator:
 
         if self.is_chain(chain_tail, chain_head):
             self.join_balls(chain_tail - 1)
+        else:
+            self.stop_balls(chain_tail - 1)
 
     def is_chain(self, chain_tail, chain_head):
         if len(self.balls) == 1 or chain_tail == 0 or chain_head == \
@@ -65,6 +70,10 @@ class BallGenerator:
             color = self.balls[i].color
             center = self.count_center(i - 1)
             self.balls[i] = Ball(color, center, self.path)
+
+    def stop_balls(self, tail_index):
+        for i in range(tail_index + 1, len(self.balls)):
+            self.balls[i].can_move = False
 
     def remove_balls(self, balls):
         for ball in balls:

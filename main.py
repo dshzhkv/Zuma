@@ -20,7 +20,7 @@ class Game:
 
         self.player = Player()
         self.path = Path()
-        self.ball_generator = BallGenerator(self.path, 10)
+        self.ball_generator = BallGenerator(self.path, 50)
         self.finish = Finish(self.path, self.ball_generator.balls)
         self.shooting_manager = ShootingManager(self.ball_generator)
 

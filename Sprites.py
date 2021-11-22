@@ -25,8 +25,11 @@ class Ball(pygame.sprite.Sprite):
         self.image = pygame.Surface(BALL_SIZE)
         self.rect = self.image.get_rect(center=center)
 
+        self.can_move = True
+
     def update(self):
-        self.move(1)
+        if self.can_move:
+            self.move(1)
 
     def move(self, steps):
         self.pos_in_path += steps
@@ -47,7 +50,7 @@ class ShootingBall(pygame.sprite.Sprite):
 
         self.target = (0, 0)
         self.angle = 0
-        self.speed = 10
+        self.speed = 15
 
     def set_target(self, target):
         self.target = (target[0] - self.rect.center[0],
