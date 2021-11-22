@@ -30,9 +30,6 @@ class BallGenerator:
     def get_available_colors(self):
         return [ball.color for ball in self.balls]
 
-    def delete(self):
-        pass
-
     def insert(self, index, shooting_ball):
         if index == len(self.balls) - 1:
             center = self.count_center(index)

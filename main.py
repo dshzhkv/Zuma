@@ -39,7 +39,7 @@ class Game:
                     self.shooting_manager.shoot(pygame.mouse.get_pos())
 
             self.update_sprites()
-            if self.finish.isFinished:
+            if self.finish.isFinished or self.shooting_manager.win:
                 isRunning = False
             self.update_display()
 

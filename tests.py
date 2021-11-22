@@ -103,6 +103,16 @@ class TestHitChain(TestCase):
         shooting_manager.shooting_ball = ShootingBall(BLUE)
         assert shooting_manager.is_hit_chain(0) is False
 
+    def test_hit_start_of_chain_true(self):
+        shooting_manager = self.set_up_shooting_manager([RED, GREEN, GREEN],
+                                                        GREEN)
+        assert shooting_manager.is_hit_chain(0) is True
+
+    def test_hit_end_of_chain_true(self):
+        shooting_manager = self.set_up_shooting_manager([GREEN, GREEN, RED],
+                                                        GREEN)
+        assert shooting_manager.is_hit_chain(2) is True
+
     @staticmethod
     def set_up_shooting_manager(balls_colors, shooting_ball_color):
         path = Path()

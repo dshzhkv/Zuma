@@ -9,6 +9,8 @@ class ShootingManager:
         self.charged_ball = ShootingBall(random.choice(
             self.ball_generator.colors))
 
+        self.win = False
+
         self.shooting_ball = None
 
     def shoot(self, target):
@@ -37,6 +39,11 @@ class ShootingManager:
             if self.shooting_ball.rect.colliderect(ball.rect):
                 if self.is_hit_chain(i):
                     self.ball_generator.destroy(self.collect_chain(i))
+                    if len(self.ball_generator.balls) == 0:
+                        self.win = True
+                        break
+                    else:
+                        self.recharge()
                 else:
                     self.ball_generator.insert(i, self.shooting_ball)
                 self.shooting_ball = None
@@ -68,10 +75,24 @@ class ShootingManager:
                     return True
                 return False
 
+        elif ball_index + 2 < len(self.ball_generator.balls) and \
+                self.shooting_ball.color == \
+                self.ball_generator.balls[ball_index + 1].color and \
+                self.shooting_ball.color == \
+                self.ball_generator.balls[ball_index + 2].color:
+            return True
+
+        elif ball_index - 2 >= 0 and self.shooting_ball.color == \
+                self.ball_generator.balls[ball_index - 1].color and \
+                self.shooting_ball.color == \
+                self.ball_generator.balls[ball_index - 2].color:
+            return True
+
         return False
 
     def collect_chain(self, ball_index):
-        chain = [self.ball_generator.balls[ball_index]]
+        chain = []
+
         i = ball_index - 1
         while i >= 0 and \
                 self.ball_generator.balls[i].color == self.shooting_ball.color:
@@ -83,6 +104,10 @@ class ShootingManager:
                 self.ball_generator.balls[i].color == self.shooting_ball.color:
             chain.append(self.ball_generator.balls[i])
             i += 1
+
+        if self.ball_generator.balls[ball_index].color == \
+                self.shooting_ball.color:
+            chain.append(self.ball_generator.balls[ball_index])
 
         chain.sort(key=lambda ball: ball.pos_in_path)
 
