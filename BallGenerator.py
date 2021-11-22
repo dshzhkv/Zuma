@@ -42,3 +42,7 @@ class BallGenerator:
         for i in range(index - 1, -1, -1):
             self.balls[i].move(8)
         self.balls.insert(index, ball)
+
+    def destroy(self, chain):
+        for ball in chain:
+            self.balls.remove(ball)

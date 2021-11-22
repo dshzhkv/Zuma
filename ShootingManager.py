@@ -35,6 +35,49 @@ class ShootingManager:
         for i in range(len(self.ball_generator.balls)):
             ball = self.ball_generator.balls[i]
             if self.shooting_ball.rect.colliderect(ball.rect):
-                self.ball_generator.insert(i, self.shooting_ball)
+                if self.is_hit_chain(i):
+                    self.ball_generator.destroy(self.collect_chain(i))
+                else:
+                    self.ball_generator.insert(i, self.shooting_ball)
                 self.shooting_ball = None
                 break
+
+    def is_hit_chain(self, ball_index):
+        if len(self.ball_generator.balls) == 1:
+            return False
+
+        if self.shooting_ball.color == \
+                self.ball_generator.balls[ball_index].color:
+            if ball_index == 0 and \
+                    self.ball_generator.balls[ball_index + 1].color == \
+                    self.shooting_ball.color:
+                return True
+
+            elif ball_index == len(self.ball_generator.balls) - 1 and \
+                    self.ball_generator.balls[ball_index - 1].color == \
+                    self.shooting_ball.color:
+                return True
+
+            elif self.ball_generator.balls[ball_index - 1].color == \
+                    self.shooting_ball.color or \
+                    self.ball_generator.balls[ball_index + 1].color == \
+                    self.shooting_ball.color:
+                return True
+
+        return False
+
+    def collect_chain(self, ball_index):
+        chain = [self.ball_generator.balls[ball_index]]
+        i = ball_index - 1
+        while i >= 0 and \
+                self.ball_generator.balls[i].color == self.shooting_ball.color:
+            chain.append(self.ball_generator.balls[i])
+            i -= 1
+
+        i = ball_index + 1
+        while i < len(self.ball_generator.balls) and \
+                self.ball_generator.balls[i].color == self.shooting_ball.color:
+            chain.append(self.ball_generator.balls[i])
+            i += 1
+
+        return chain
