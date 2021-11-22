@@ -6,7 +6,7 @@ class Path:
     def __init__(self):
         self.start = (0, 80)
         self.end = (160, 340)
-        self.step = 5
+        self.step = 2
         self.nodes = []
         self.set_path()
 

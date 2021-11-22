@@ -76,24 +76,24 @@ class TestHitChain(TestCase):
         assert shooting_manager.is_hit_chain(1) is False
 
     def test_hit_chain_in_head_true(self):
-        shooting_manager = self.set_up_shooting_manager([BLUE, BLUE, GREEN],
-                                                        BLUE)
-        assert shooting_manager.is_hit_chain(0) is True
-
-    def test_hit_chain_in_head_false(self):
-        shooting_manager = self.set_up_shooting_manager([BLUE, BLUE, GREEN],
-                                                        GREEN)
-        assert shooting_manager.is_hit_chain(0) is False
-
-    def test_hit_chain_in_tail_true(self):
         shooting_manager = self.set_up_shooting_manager([GREEN, BLUE, BLUE],
                                                         BLUE)
         assert shooting_manager.is_hit_chain(2) is True
 
+    def test_hit_chain_in_head_false(self):
+        shooting_manager = self.set_up_shooting_manager([BLUE, BLUE, GREEN],
+                                                        GREEN)
+        assert shooting_manager.is_hit_chain(2) is False
+
+    def test_hit_chain_in_tail_true(self):
+        shooting_manager = self.set_up_shooting_manager([BLUE, BLUE, BLUE],
+                                                        BLUE)
+        assert shooting_manager.is_hit_chain(0) is True
+
     def test_hit_chain_it_tail_false(self):
         shooting_manager = self.set_up_shooting_manager([GREEN, BLUE, BLUE],
                                                         GREEN)
-        assert shooting_manager.is_hit_chain(2) is False
+        assert shooting_manager.is_hit_chain(0) is False
 
     def test_shoot_in_last_ball_false(self):
         path = Path()
@@ -175,13 +175,13 @@ class TestDestroy(TestCase):
         assert (ball_generator.balls[0].color == GREEN and
                 ball_generator.balls[-1].color == RED) is True
 
-    def test_one_color_balls_moved(self):
+    def test_JoinBallsAfterDestroyChain_IfSameColor(self):
         ball_generator = self.set_up_ball_generator([GREEN, BLUE, BLUE, GREEN])
         ball_generator.destroy(
             [ball_generator.balls[1], ball_generator.balls[2]])
         assert ball_generator.balls[1].rect.center == (80, 80)
 
-    def test_different_color_balls_not_moved(self):
+    def test_NotJoinBallsAfterDestroyChain_IfDifferentColor(self):
         ball_generator = self.set_up_ball_generator([GREEN, BLUE, BLUE, RED])
         ball_generator.destroy(
             [ball_generator.balls[1], ball_generator.balls[2]])
@@ -201,7 +201,6 @@ class TestDestroy(TestCase):
             [ball_generator.balls[2], ball_generator.balls[3]])
         assert (ball_generator.balls[0].rect.center == (40, 80) and
                 ball_generator.balls[1].rect.center == (80, 80)) is True
-
 
     @staticmethod
     def set_up_ball_generator(balls_colors):

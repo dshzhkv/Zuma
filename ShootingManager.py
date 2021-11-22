@@ -48,21 +48,25 @@ class ShootingManager:
 
         if self.shooting_ball.color == \
                 self.ball_generator.balls[ball_index].color:
-            if ball_index == 0 and \
-                    self.ball_generator.balls[ball_index + 1].color == \
-                    self.shooting_ball.color:
-                return True
+            if ball_index == 0:
+                if self.ball_generator.balls[ball_index + 1].color == \
+                        self.shooting_ball.color:
+                    return True
+                return False
 
-            elif ball_index == len(self.ball_generator.balls) - 1 and \
-                    self.ball_generator.balls[ball_index - 1].color == \
-                    self.shooting_ball.color:
-                return True
+            elif ball_index == len(self.ball_generator.balls) - 1:
+                if self.ball_generator.balls[ball_index - 1].color == \
+                        self.shooting_ball.color:
+                    return True
+                return False
 
-            elif self.ball_generator.balls[ball_index - 1].color == \
-                    self.shooting_ball.color or \
-                    self.ball_generator.balls[ball_index + 1].color == \
-                    self.shooting_ball.color:
-                return True
+            else:
+                if self.ball_generator.balls[ball_index - 1].color == \
+                        self.shooting_ball.color or \
+                        self.ball_generator.balls[ball_index + 1].color == \
+                        self.shooting_ball.color:
+                    return True
+                return False
 
         return False
 
