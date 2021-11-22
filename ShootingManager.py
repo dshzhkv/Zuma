@@ -80,4 +80,6 @@ class ShootingManager:
             chain.append(self.ball_generator.balls[i])
             i += 1
 
+        chain.sort(key=lambda ball: ball.pos_in_path)
+
         return chain

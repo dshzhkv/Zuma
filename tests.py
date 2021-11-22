@@ -165,7 +165,13 @@ class TestDestroy(TestCase):
         ball_generator = self.set_up_ball_generator([GREEN, BLUE, BLUE, RED])
         ball_generator.destroy([ball_generator.balls[1], ball_generator.balls[2]])
         assert (ball_generator.balls[0].color == GREEN and
-                ball_generator.balls[1].color == RED) is True
+                ball_generator.balls[-1].color == RED) is True
+
+    def test_one_color_balls_moved(self):
+        ball_generator = self.set_up_ball_generator([GREEN, BLUE, BLUE, GREEN])
+        ball_generator.destroy(
+            [ball_generator.balls[1], ball_generator.balls[2]])
+        assert ball_generator.balls[0].rect.center == (40, 80)
 
     @staticmethod
     def set_up_ball_generator(balls_colors):
@@ -176,3 +182,4 @@ class TestDestroy(TestCase):
                                 Ball(balls_colors[2], (40, 80), path),
                                 Ball(balls_colors[3], (0, 80), path)]
         return ball_generator
+

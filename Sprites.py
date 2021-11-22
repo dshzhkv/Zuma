@@ -32,14 +32,6 @@ class Ball(pygame.sprite.Sprite):
         self.pos_in_path += steps
         self.rect.center = self.path.nodes[self.pos_in_path]
 
-    # change
-    def change_direction(self):
-        if self.rect.center in self.path.nodes:
-            if self.direction == Direction.Up:
-                self.direction = Direction.Right
-            else:
-                self.direction = Direction(self.direction.value + 1)
-
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, self.rect.center, BALL_RADIUS)
 
