@@ -46,15 +46,17 @@ class ShootingManager:
         for i in range(len(self.ball_generator.balls)):
             ball = self.ball_generator.balls[i]
             if shooting_ball.rect.colliderect(ball.rect):
-                if self.is_hit_chain(i, shooting_ball.color):
-                    self.handle_hit(i, shooting_ball.color)
+                chain = self.collect_chain(i, shooting_ball.color)
+                if len(chain) > 1:
+                    self.handle_hit(chain)
                 else:
                     self.ball_generator.insert(i, shooting_ball)
                 self.shooting_balls.remove(shooting_ball)
+                if len(self.ball_generator.balls) == 0:
+                    self.win = True
                 break
 
-    def handle_hit(self, ball_index, color):
-        chain = self.collect_chain(ball_index, color)
+    def handle_hit(self, chain):
 
         chain_tail = self.ball_generator.balls.index(chain[0])
         chain_head = self.ball_generator.balls.index(chain[-1])
@@ -66,12 +68,6 @@ class ShootingManager:
         else:
             self.ball_generator.stop_balls(chain_tail - 1)
 
-        self.charged_ball = self.recharge()
-
-        if len(self.ball_generator.balls) == 0:
-            self.win = True
-            return
-
     def is_chain(self, tail_index, head_index):
         if len(self.ball_generator.balls) == 1 or tail_index == 0 or head_index == \
                 len(self.ball_generator.balls) + head_index - tail_index:
@@ -82,67 +78,28 @@ class ShootingManager:
 
         return False
 
-    def is_hit_chain(self, ball_index, color):
-        if len(self.ball_generator.balls) == 1:
-            return False
-
-        if color == \
-                self.ball_generator.balls[ball_index].color:
-            if ball_index == 0:
-                if self.ball_generator.balls[ball_index + 1].color == \
-                        color:
-                    return True
-                return False
-
-            elif ball_index == len(self.ball_generator.balls) - 1:
-                if self.ball_generator.balls[ball_index - 1].color == \
-                        color:
-                    return True
-                return False
-
-            else:
-                if self.ball_generator.balls[ball_index - 1].color == \
-                        color or \
-                        self.ball_generator.balls[ball_index + 1].color == \
-                        color:
-                    return True
-                return False
-
-        elif ball_index + 2 < len(self.ball_generator.balls) and \
-                color == \
-                self.ball_generator.balls[ball_index + 1].color and \
-                color == \
-                self.ball_generator.balls[ball_index + 2].color:
-            return True
-
-        elif ball_index - 2 >= 0 and color == \
-                self.ball_generator.balls[ball_index - 1].color and \
-                color == \
-                self.ball_generator.balls[ball_index - 2].color:
-            return True
-
-        return False
-
     def collect_chain(self, ball_index, color):
-        chain = []
+        left_half = self.collect_half_chain(ball_index - 1, -1, color)
+        right_half = self.collect_half_chain(ball_index + 1, 1, color)
 
-        i = ball_index - 1
-        while i >= 0 and \
+        if self.ball_generator.balls[ball_index].color == color:
+            chain = left_half + [self.ball_generator.balls[ball_index]] + \
+                    right_half
+            chain.sort(key=lambda ball: ball.pos_in_path)
+
+            return chain
+
+        if len(left_half) > len(right_half):
+            return left_half
+        return right_half
+
+    def collect_half_chain(self, i, delta, color):
+        half_chain = []
+        while len(self.ball_generator.balls) > i >= 0 and \
                 self.ball_generator.balls[i].color == color:
-            chain.append(self.ball_generator.balls[i])
-            i -= 1
+            half_chain.append(self.ball_generator.balls[i])
+            i += delta
 
-        i = ball_index + 1
-        while i < len(self.ball_generator.balls) and \
-                self.ball_generator.balls[i].color == color:
-            chain.append(self.ball_generator.balls[i])
-            i += 1
+        return half_chain
 
-        if self.ball_generator.balls[ball_index].color == \
-                color:
-            chain.append(self.ball_generator.balls[ball_index])
-
-        chain.sort(key=lambda ball: ball.pos_in_path)
-
-        return chain
 

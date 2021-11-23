@@ -38,6 +38,10 @@ class Ball(pygame.sprite.Sprite):
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, self.rect.center, BALL_RADIUS)
 
+    def __eq__(self, other):
+        return self.color == other.color and \
+               self.rect.center == other.rect.center
+
 
 class ShootingBall(pygame.sprite.Sprite):
     def __init__(self, color):

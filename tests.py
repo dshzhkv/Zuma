@@ -10,153 +10,96 @@ from ShootingManager import ShootingManager
 class TestInsert(TestCase):
     path = Path()
 
-    def test_insertBallInMiddle_length_changed(self):
+    def test_insert_ball_in_middle(self):
         shooting_ball = ShootingBall(RED)
-        ball_generator = self.create_ball_generator()
-        ball_generator.insert(1, shooting_ball)
-        assert len(ball_generator.balls) == 4
+        balls_actual = self.setup_ball_generator(1, shooting_ball).balls
+        balls_expected = self.setup_expected_balls([YELLOW, GREEN,
+                                                    shooting_ball.color, BLUE])
+        assert self.are_balls_equal(balls_expected, balls_actual) is True
 
-    def test_insertBallInMiddle(self):
+    def test_insert_ball_in_head(self):
         shooting_ball = ShootingBall(RED)
-        ball_generator = self.create_ball_generator()
-        ball_generator.insert(1, shooting_ball)
+        balls_actual = self.setup_ball_generator(2, shooting_ball).balls
+        balls_expected = self.setup_expected_balls([YELLOW, GREEN, BLUE,
+                                                    shooting_ball.color])
+        assert self.are_balls_equal(balls_expected, balls_actual) is True
 
-        assert self.are_balls_correct(ball_generator,
-                                      [YELLOW, GREEN, shooting_ball.color,
-                                       BLUE]) is True
-
-    def test_insertBallInHead(self):
+    def test_insert_ball_in_tail(self):
         shooting_ball = ShootingBall(RED)
-        ball_generator = self.create_ball_generator()
-        ball_generator.insert(2, shooting_ball)
+        balls_actual = self.setup_ball_generator(0, shooting_ball).balls
+        balls_expected = self.setup_expected_balls([YELLOW,
+                                                    shooting_ball.color, GREEN,
+                                                    BLUE])
+        assert self.are_balls_equal(balls_expected, balls_actual) is True
 
-        assert self.are_balls_correct(ball_generator,
-                                      [YELLOW, GREEN,
-                                       BLUE, shooting_ball.color]) is True
-
-    def test_insertBallInTail(self):
-        shooting_ball = ShootingBall(RED)
-        ball_generator = self.create_ball_generator()
-        ball_generator.insert(0, shooting_ball)
-        assert self.are_balls_correct(ball_generator,
-                                      [YELLOW, shooting_ball.color, GREEN,
-                                       BLUE]) is True
-
-    def create_ball_generator(self):
+    def setup_ball_generator(self, insert_index, shooting_ball):
         ball_generator = BallGenerator(self.path, 3)
         ball_generator.balls = [Ball(YELLOW, (40, 80), self.path),
                                 Ball(GREEN, (80, 80), self.path),
                                 Ball(BLUE, (120, 80), self.path)]
+        ball_generator.insert(insert_index, shooting_ball)
         return ball_generator
 
-    @staticmethod
-    def are_balls_correct(ball_generator, colors):
-        ball0 = ball_generator.balls[0]
-        ball1 = ball_generator.balls[1]
-        ball2 = ball_generator.balls[2]
-        ball3 = ball_generator.balls[3]
-
-        return (ball0.color == colors[0] and ball0.rect.center == (40, 80)) \
-            and (ball1.color == colors[1] and ball1.rect.center == (80, 80)) \
-            and (ball2.color == colors[2] and ball2.rect.center == (120, 80)) \
-            and (ball3.color == colors[3] and ball3.rect.center == (160, 80))
-
-
-class TestHitChain(TestCase):
-
-    def test_hit_chain_in_middle_true(self):
-        shooting_ball_color = BLUE
-        shooting_manager = self.set_up_shooting_manager([BLUE, BLUE, GREEN],
-                                                        shooting_ball_color)
-
-        assert shooting_manager.is_hit_chain(1, shooting_ball_color) is True
-
-    def test_hit_chain_in_middle_false(self):
-        shooting_ball_color = GREEN
-        shooting_manager = self.set_up_shooting_manager(
-            [BLUE, BLUE, GREEN],
-            shooting_ball_color)
-        assert shooting_manager.is_hit_chain(1, shooting_ball_color) is False
-
-    def test_hit_chain_in_head_true(self):
-        shooting_ball_color = BLUE
-        shooting_manager = self.set_up_shooting_manager([GREEN, BLUE, BLUE],
-                                                        shooting_ball_color)
-        assert shooting_manager.is_hit_chain(2, shooting_ball_color) is True
-
-    def test_hit_chain_in_head_false(self):
-        shooting_ball_color = GREEN
-        shooting_manager = self.set_up_shooting_manager([BLUE, BLUE, GREEN],
-                                                        shooting_ball_color)
-        assert shooting_manager.is_hit_chain(2, shooting_ball_color) is False
-
-    def test_hit_chain_in_tail_true(self):
-        shooting_ball_color = BLUE
-        shooting_manager = self.set_up_shooting_manager([BLUE, BLUE, BLUE],
-                                                        shooting_ball_color)
-        assert shooting_manager.is_hit_chain(0, shooting_ball_color) is True
-
-    def test_hit_chain_it_tail_false(self):
-        shooting_ball_color = GREEN
-        shooting_manager = self.set_up_shooting_manager([GREEN, BLUE, BLUE],
-                                                        shooting_ball_color)
-        assert shooting_manager.is_hit_chain(0, shooting_ball_color) is False
-
-    def test_shoot_in_last_ball_false(self):
-        path = Path()
-        ball_generator = BallGenerator(path, 1)
-        ball_generator.balls = [Ball(BLUE, (40, 80), path)]
-        shooting_manager = ShootingManager(ball_generator)
-        shooting_ball_color = BLUE
-        shooting_manager.shooting_ball = [ShootingBall(shooting_ball_color)]
-        assert shooting_manager.is_hit_chain(0, shooting_ball_color) is False
-
-    def test_hit_start_of_chain_true(self):
-        shooting_ball_color = GREEN
-        shooting_manager = self.set_up_shooting_manager([RED, GREEN, GREEN],
-                                                        shooting_ball_color)
-        assert shooting_manager.is_hit_chain(0, shooting_ball_color) is True
-
-    def test_hit_end_of_chain_true(self):
-        shooting_ball_color = GREEN
-        shooting_manager = self.set_up_shooting_manager([GREEN, GREEN, RED],
-                                                        shooting_ball_color)
-        assert shooting_manager.is_hit_chain(2, shooting_ball_color) is True
+    def setup_expected_balls(self, colors):
+        centers = [(i, 80) for i in range(40, 40 * len(colors) + 1, 40)]
+        return [Ball(colors[i], centers[i], self.path) for i in
+                range(len(colors))]
 
     @staticmethod
-    def set_up_shooting_manager(balls_colors, shooting_ball_color):
-        path = Path()
-        ball_generator = BallGenerator(path, 3)
-        ball_generator.balls = [Ball(balls_colors[0], (40, 80), path),
-                                Ball(balls_colors[1], (80, 80), path),
-                                Ball(balls_colors[2], (120, 80), path)]
-        shooting_manager = ShootingManager(ball_generator)
-        shooting_manager.shooting_balls = [ShootingBall(shooting_ball_color)]
-        return shooting_manager
+    def are_balls_equal(expected, actual):
+        if len(expected) != len(actual):
+            return False
+
+        for i in range(len(expected)):
+            if expected[i] != actual[i]:
+                return False
+
+        return True
 
 
 class TestCollectChain(TestCase):
 
     def test_collect_chain_from_middle(self):
-        chains = self.collect_chains([GREEN, BLUE, BLUE, GREEN], BLUE, 2,
-                                     [1, 2])
+        chains = self.setup_chains([GREEN, BLUE, BLUE, GREEN], BLUE, 2,
+                                   [1, 2])
         assert self.are_chains_equal(chains[0], chains[1]) is True
 
     def test_collect_chain_from_head(self):
-        chains = self.collect_chains([GREEN, GREEN, BLUE, BLUE], GREEN, 0,
-                                     [0, 1])
+        chains = self.setup_chains([GREEN, GREEN, BLUE, BLUE], GREEN, 0,
+                                   [0, 1])
         assert self.are_chains_equal(chains[0], chains[1]) is True
 
     def test_collect_chain_from_tail(self):
-        chains = self.collect_chains([GREEN, GREEN, BLUE, BLUE], BLUE, 3,
-                                     [2, 3])
+        chains = self.setup_chains([GREEN, GREEN, BLUE, BLUE], BLUE, 3,
+                                   [2, 3])
         assert self.are_chains_equal(chains[0], chains[1]) is True
 
-    def collect_chains(self, balls_colors, shooting_ball_color, start_index,
-                       expected_balls_indexes):
-        ball_generator = self.set_up_ball_generator(balls_colors)
-        shooting_manager = self.set_up_shooting_manager(ball_generator,
-                                                        shooting_ball_color)
+    def test_collect_chain_from_tail_startDifferentColor(self):
+        chains = self.setup_chains([GREEN, BLUE, GREEN, GREEN], GREEN, 1,
+                                   [2, 3])
+        assert self.are_chains_equal(chains[0], chains[1]) is True
+
+    def test_chain_one_ball(self):
+        ball_generator = self.setup_ball_generator([GREEN, BLUE, RED, YELLOW])
+        shooting_manager = self.setup_shooting_manager(ball_generator,
+                                                       BLUE)
+        chain_expected = [ball_generator.balls[1]]
+        chain_actual = shooting_manager.collect_chain(1, BLUE)
+        assert self.are_chains_equal(chain_expected, chain_actual)
+
+    def test_no_chain(self):
+        ball_generator = self.setup_ball_generator([GREEN, GREEN, GREEN, GREEN])
+        shooting_manager = self.setup_shooting_manager(ball_generator,
+                                                       BLUE)
+        chain_expected = []
+        chain_actual = shooting_manager.collect_chain(1, BLUE)
+        assert self.are_chains_equal(chain_expected, chain_actual)
+
+    def setup_chains(self, balls_colors, shooting_ball_color, start_index,
+                     expected_balls_indexes):
+        ball_generator = self.setup_ball_generator(balls_colors)
+        shooting_manager = self.setup_shooting_manager(ball_generator,
+                                                       shooting_ball_color)
         chain_expected = [ball_generator.balls[expected_balls_indexes[0]],
                           ball_generator.balls[expected_balls_indexes[1]]]
         chain_actual = shooting_manager.collect_chain(start_index,
@@ -164,26 +107,30 @@ class TestCollectChain(TestCase):
         return chain_expected, chain_actual
 
     @staticmethod
-    def set_up_ball_generator(balls_colors):
+    def setup_ball_generator(balls_colors):
         path = Path()
         ball_generator = BallGenerator(path, 4)
-        ball_generator.balls = [Ball(balls_colors[0], (120, 80), path),
-                                Ball(balls_colors[1], (80, 80), path),
-                                Ball(balls_colors[2], (40, 80), path),
-                                Ball(balls_colors[3], (0, 80), path)]
+        ball_generator.balls = [Ball(balls_colors[0], (0, 80), path),
+                                Ball(balls_colors[1], (40, 80), path),
+                                Ball(balls_colors[2], (80, 80), path),
+                                Ball(balls_colors[3], (120, 80), path)]
         return ball_generator
 
     @staticmethod
-    def set_up_shooting_manager(ball_generator, shooting_ball_color):
+    def setup_shooting_manager(ball_generator, shooting_ball_color):
         shooting_manager = ShootingManager(ball_generator)
         shooting_manager.shooting_balls = [ShootingBall(shooting_ball_color)]
         return shooting_manager
 
     @staticmethod
-    def are_chains_equal(chain_1, chain_2):
-        for ball in chain_1:
-            if ball not in chain_2:
+    def are_chains_equal(expected, actual):
+        if len(expected) != len(actual):
+            return False
+
+        for i in range(len(expected)):
+            if expected[i] != actual[i]:
                 return False
+
         return True
 
 
