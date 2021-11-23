@@ -1,4 +1,5 @@
 from Sprites import ShootingBall
+from Params import *
 import random
 
 
@@ -11,12 +12,13 @@ class ShootingManager:
 
         self.win = False
 
-        self.shooting_ball = None
+        self.shooting_balls = []
 
     def shoot(self, target):
-        self.shooting_ball = self.charged_ball
-        self.shooting_ball.set_target(target)
+        shooting_ball = self.charged_ball
+        shooting_ball.set_target(target)
         self.charged_ball = self.recharge()
+        self.shooting_balls.append(shooting_ball)
 
     def recharge(self):
         return ShootingBall(random.choice(
@@ -24,92 +26,99 @@ class ShootingManager:
 
     def draw(self, screen):
         self.charged_ball.draw(screen)
-        if self.shooting_ball is not None:
-            self.shooting_ball.draw(screen)
+        for ball in self.shooting_balls:
+            ball.draw(screen)
 
     def update(self):
         self.charged_ball.update()
-        if self.shooting_ball is not None:
-            self.shooting_ball.update()
-            self.handle_shoot()
+        for ball in self.shooting_balls:
+            ball.update()
+            self.remove_flown_away(ball)
+            self.handle_shoot(ball)
 
-    def handle_shoot(self):
+    def remove_flown_away(self, ball):
+        x = ball.rect.center[0]
+        y = ball.rect.center[1]
+        if x < 0 or x > WIDTH or y < 0 or y > HEIGHT:
+            self.shooting_balls.remove(ball)
+
+    def handle_shoot(self, shooting_ball):
         for i in range(len(self.ball_generator.balls)):
             ball = self.ball_generator.balls[i]
-            if self.shooting_ball.rect.colliderect(ball.rect):
-                self.handle_hit(i)
-                self.shooting_ball = None
+            if shooting_ball.rect.colliderect(ball.rect):
+                self.handle_hit(i, shooting_ball)
+                self.shooting_balls.remove(shooting_ball)
                 break
 
-    def handle_hit(self, ball_index):
-        if self.is_hit_chain(ball_index):
-            self.ball_generator.destroy(self.collect_chain(ball_index))
+    def handle_hit(self, ball_index, shooting_ball):
+        if self.is_hit_chain(ball_index, shooting_ball):
+            self.ball_generator.destroy(self.collect_chain(ball_index, shooting_ball))
             if len(self.ball_generator.balls) == 0:
                 self.win = True
                 return
             else:
                 self.recharge()
         else:
-            self.ball_generator.insert(ball_index, self.shooting_ball)
+            self.ball_generator.insert(ball_index, shooting_ball)
 
-    def is_hit_chain(self, ball_index):
+    def is_hit_chain(self, ball_index, shooting_ball):
         if len(self.ball_generator.balls) == 1:
             return False
 
-        if self.shooting_ball.color == \
+        if shooting_ball.color == \
                 self.ball_generator.balls[ball_index].color:
             if ball_index == 0:
                 if self.ball_generator.balls[ball_index + 1].color == \
-                        self.shooting_ball.color:
+                        shooting_ball.color:
                     return True
                 return False
 
             elif ball_index == len(self.ball_generator.balls) - 1:
                 if self.ball_generator.balls[ball_index - 1].color == \
-                        self.shooting_ball.color:
+                        shooting_ball.color:
                     return True
                 return False
 
             else:
                 if self.ball_generator.balls[ball_index - 1].color == \
-                        self.shooting_ball.color or \
+                        shooting_ball.color or \
                         self.ball_generator.balls[ball_index + 1].color == \
-                        self.shooting_ball.color:
+                        shooting_ball.color:
                     return True
                 return False
 
         elif ball_index + 2 < len(self.ball_generator.balls) and \
-                self.shooting_ball.color == \
+                shooting_ball.color == \
                 self.ball_generator.balls[ball_index + 1].color and \
-                self.shooting_ball.color == \
+                shooting_ball.color == \
                 self.ball_generator.balls[ball_index + 2].color:
             return True
 
-        elif ball_index - 2 >= 0 and self.shooting_ball.color == \
+        elif ball_index - 2 >= 0 and shooting_ball.color == \
                 self.ball_generator.balls[ball_index - 1].color and \
-                self.shooting_ball.color == \
+                shooting_ball.color == \
                 self.ball_generator.balls[ball_index - 2].color:
             return True
 
         return False
 
-    def collect_chain(self, ball_index):
+    def collect_chain(self, ball_index, shooting_ball):
         chain = []
 
         i = ball_index - 1
         while i >= 0 and \
-                self.ball_generator.balls[i].color == self.shooting_ball.color:
+                self.ball_generator.balls[i].color == shooting_ball.color:
             chain.append(self.ball_generator.balls[i])
             i -= 1
 
         i = ball_index + 1
         while i < len(self.ball_generator.balls) and \
-                self.ball_generator.balls[i].color == self.shooting_ball.color:
+                self.ball_generator.balls[i].color == shooting_ball.color:
             chain.append(self.ball_generator.balls[i])
             i += 1
 
         if self.ball_generator.balls[ball_index].color == \
-                self.shooting_ball.color:
+                shooting_ball.color:
             chain.append(self.ball_generator.balls[ball_index])
 
         chain.sort(key=lambda ball: ball.pos_in_path)

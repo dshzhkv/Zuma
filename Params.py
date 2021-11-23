@@ -1,6 +1,3 @@
-from enum import Enum
-
-
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -9,13 +6,11 @@ BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 BACKGROUND_COLOR = (183, 173, 163)
 
-
-
 WIDTH = 800
 HEIGHT = 650
 SCREEN_CENTER = (WIDTH / 2, HEIGHT / 2)
 FPS = 30
 
-TURTLE_SIZE = (100, 100)
+PLAYER_SIZE = (100, 100)
 BALL_SIZE = (40, 40)
 BALL_RADIUS = 20

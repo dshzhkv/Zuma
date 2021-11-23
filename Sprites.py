@@ -72,7 +72,7 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         self.original_image = pygame.transform.smoothscale(
-            pygame.image.load("original.png"), TURTLE_SIZE)
+            pygame.image.load("original.png"), PLAYER_SIZE)
         self.original_image.set_colorkey(BLACK)
 
         self.image = self.original_image
