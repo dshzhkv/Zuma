@@ -45,25 +45,8 @@ class BallGenerator:
         self.balls.insert(index + 1, ball)
 
     def destroy(self, chain):
-        chain_tail = self.balls.index(chain[0])
-        chain_head = self.balls.index(chain[-1])
-
-        self.remove_balls(chain)
-
-        if self.is_chain(chain_tail, chain_head):
-            self.join_balls(chain_tail - 1)
-        else:
-            self.stop_balls(chain_tail - 1)
-
-    def is_chain(self, chain_tail, chain_head):
-        if len(self.balls) == 1 or chain_tail == 0 or chain_head == \
-                len(self.balls) + chain_head - chain_tail:
-            return False
-
-        if self.balls[chain_tail - 1].color == self.balls[chain_tail].color:
-            return True
-
-        return False
+        for ball in chain:
+            self.balls.remove(ball)
 
     def join_balls(self, tail_index):
         for i in range(tail_index + 1, len(self.balls)):
@@ -74,10 +57,6 @@ class BallGenerator:
     def stop_balls(self, tail_index):
         for i in range(tail_index + 1, len(self.balls)):
             self.balls[i].can_move = False
-
-    def remove_balls(self, balls):
-        for ball in balls:
-            self.balls.remove(ball)
 
     def count_center(self, index):
         return self.path.nodes[self.balls[index].pos_in_path + 2 * BALL_RADIUS

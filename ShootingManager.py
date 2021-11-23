@@ -46,20 +46,41 @@ class ShootingManager:
         for i in range(len(self.ball_generator.balls)):
             ball = self.ball_generator.balls[i]
             if shooting_ball.rect.colliderect(ball.rect):
-                self.handle_hit(i, shooting_ball)
+                if self.is_hit_chain(i, shooting_ball):
+                    self.handle_hit(i, shooting_ball)
+                else:
+                    self.ball_generator.insert(i, shooting_ball)
                 self.shooting_balls.remove(shooting_ball)
                 break
 
     def handle_hit(self, ball_index, shooting_ball):
-        if self.is_hit_chain(ball_index, shooting_ball):
-            self.ball_generator.destroy(self.collect_chain(ball_index, shooting_ball))
-            if len(self.ball_generator.balls) == 0:
-                self.win = True
-                return
-            else:
-                self.recharge()
+        chain = self.collect_chain(ball_index, shooting_ball)
+
+        chain_tail = self.ball_generator.balls.index(chain[0])
+        chain_head = self.ball_generator.balls.index(chain[-1])
+
+        self.ball_generator.destroy(chain)
+
+        if self.is_chain(chain_tail, chain_head):
+            self.ball_generator.join_balls(chain_tail - 1)
         else:
-            self.ball_generator.insert(ball_index, shooting_ball)
+            self.ball_generator.stop_balls(chain_tail - 1)
+
+        self.charged_ball = self.recharge()
+
+        if len(self.ball_generator.balls) == 0:
+            self.win = True
+            return
+
+    def is_chain(self, tail_index, head_index):
+        if len(self.ball_generator.balls) == 1 or tail_index == 0 or head_index == \
+                len(self.ball_generator.balls) + head_index - tail_index:
+            return False
+
+        if self.ball_generator.balls[tail_index - 1].color == self.ball_generator.balls[tail_index].color:
+            return True
+
+        return False
 
     def is_hit_chain(self, ball_index, shooting_ball):
         if len(self.ball_generator.balls) == 1:
