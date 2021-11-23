@@ -145,3 +145,4 @@ class ShootingManager:
         chain.sort(key=lambda ball: ball.pos_in_path)
 
         return chain
+

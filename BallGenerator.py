@@ -61,3 +61,4 @@ class BallGenerator:
     def count_center(self, index):
         return self.path.nodes[self.balls[index].pos_in_path + 2 * BALL_RADIUS
                                // self.path.step]
+
