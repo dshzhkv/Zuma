@@ -40,7 +40,8 @@ class Ball(pygame.sprite.Sprite):
 
     def __eq__(self, other):
         return self.color == other.color and \
-               self.rect.center == other.rect.center
+               self.rect.center == other.rect.center and \
+               self.can_move == other.can_move
 
 
 class ShootingBall(pygame.sprite.Sprite):

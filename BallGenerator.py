@@ -49,13 +49,13 @@ class BallGenerator:
             self.balls.remove(ball)
 
     def join_balls(self, tail_index):
-        for i in range(tail_index + 1, len(self.balls)):
+        for i in range(tail_index, len(self.balls)):
             color = self.balls[i].color
             center = self.count_center(i - 1)
             self.balls[i] = Ball(color, center, self.path)
 
     def stop_balls(self, tail_index):
-        for i in range(tail_index + 1, len(self.balls)):
+        for i in range(tail_index, len(self.balls)):
             self.balls[i].can_move = False
 
     def count_center(self, index):

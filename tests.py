@@ -7,6 +7,17 @@ from Sprites import *
 from ShootingManager import ShootingManager
 
 
+def are_lists_equal(expected, actual):
+    if len(expected) != len(actual):
+        return False
+
+    for i in range(len(expected)):
+        if expected[i] != actual[i]:
+            return False
+
+    return True
+
+
 class TestInsert(TestCase):
     path = Path()
 
@@ -15,14 +26,14 @@ class TestInsert(TestCase):
         balls_actual = self.setup_ball_generator(1, shooting_ball).balls
         balls_expected = self.setup_expected_balls([YELLOW, GREEN,
                                                     shooting_ball.color, BLUE])
-        assert self.are_balls_equal(balls_expected, balls_actual) is True
+        assert are_lists_equal(balls_expected, balls_actual) is True
 
     def test_insert_ball_in_head(self):
         shooting_ball = ShootingBall(RED)
         balls_actual = self.setup_ball_generator(2, shooting_ball).balls
         balls_expected = self.setup_expected_balls([YELLOW, GREEN, BLUE,
                                                     shooting_ball.color])
-        assert self.are_balls_equal(balls_expected, balls_actual) is True
+        assert are_lists_equal(balls_expected, balls_actual) is True
 
     def test_insert_ball_in_tail(self):
         shooting_ball = ShootingBall(RED)
@@ -30,7 +41,7 @@ class TestInsert(TestCase):
         balls_expected = self.setup_expected_balls([YELLOW,
                                                     shooting_ball.color, GREEN,
                                                     BLUE])
-        assert self.are_balls_equal(balls_expected, balls_actual) is True
+        assert are_lists_equal(balls_expected, balls_actual) is True
 
     def setup_ball_generator(self, insert_index, shooting_ball):
         ball_generator = BallGenerator(self.path, 3)
@@ -45,39 +56,28 @@ class TestInsert(TestCase):
         return [Ball(colors[i], centers[i], self.path) for i in
                 range(len(colors))]
 
-    @staticmethod
-    def are_balls_equal(expected, actual):
-        if len(expected) != len(actual):
-            return False
-
-        for i in range(len(expected)):
-            if expected[i] != actual[i]:
-                return False
-
-        return True
-
 
 class TestCollectChain(TestCase):
 
     def test_collect_chain_from_middle(self):
         chains = self.setup_chains([GREEN, BLUE, BLUE, GREEN], BLUE, 2,
                                    [1, 2])
-        assert self.are_chains_equal(chains[0], chains[1]) is True
+        assert are_lists_equal(chains[0], chains[1]) is True
 
     def test_collect_chain_from_head(self):
         chains = self.setup_chains([GREEN, GREEN, BLUE, BLUE], GREEN, 0,
                                    [0, 1])
-        assert self.are_chains_equal(chains[0], chains[1]) is True
+        assert are_lists_equal(chains[0], chains[1]) is True
 
     def test_collect_chain_from_tail(self):
         chains = self.setup_chains([GREEN, GREEN, BLUE, BLUE], BLUE, 3,
                                    [2, 3])
-        assert self.are_chains_equal(chains[0], chains[1]) is True
+        assert are_lists_equal(chains[0], chains[1]) is True
 
     def test_collect_chain_from_tail_startDifferentColor(self):
         chains = self.setup_chains([GREEN, BLUE, GREEN, GREEN], GREEN, 1,
                                    [2, 3])
-        assert self.are_chains_equal(chains[0], chains[1]) is True
+        assert are_lists_equal(chains[0], chains[1]) is True
 
     def test_chain_one_ball(self):
         ball_generator = self.setup_ball_generator([GREEN, BLUE, RED, YELLOW])
@@ -85,7 +85,7 @@ class TestCollectChain(TestCase):
                                                        BLUE)
         chain_expected = [ball_generator.balls[1]]
         chain_actual = shooting_manager.collect_chain(1, BLUE)
-        assert self.are_chains_equal(chain_expected, chain_actual)
+        assert are_lists_equal(chain_expected, chain_actual)
 
     def test_no_chain(self):
         ball_generator = self.setup_ball_generator([GREEN, GREEN, GREEN, GREEN])
@@ -93,7 +93,7 @@ class TestCollectChain(TestCase):
                                                        BLUE)
         chain_expected = []
         chain_actual = shooting_manager.collect_chain(1, BLUE)
-        assert self.are_chains_equal(chain_expected, chain_actual)
+        assert are_lists_equal(chain_expected, chain_actual)
 
     def setup_chains(self, balls_colors, shooting_ball_color, start_index,
                      expected_balls_indexes):
@@ -122,17 +122,6 @@ class TestCollectChain(TestCase):
         shooting_manager.shooting_balls = [ShootingBall(shooting_ball_color)]
         return shooting_manager
 
-    @staticmethod
-    def are_chains_equal(expected, actual):
-        if len(expected) != len(actual):
-            return False
-
-        for i in range(len(expected)):
-            if expected[i] != actual[i]:
-                return False
-
-        return True
-
 
 class TestDestroy(TestCase):
 
@@ -153,33 +142,134 @@ class TestDestroy(TestCase):
         assert (self.ball_generator.balls[0].color == GREEN and
                 self.ball_generator.balls[-1].color == RED) is True
 
-    # def test_JoinBallsAfterDestroyChain_IfSameColor(self):
-    #     ball_generator = self.set_up_ball_generator([GREEN, BLUE, BLUE, GREEN])
-    #     ball_generator.destroy(
-    #         [ball_generator.balls[1], ball_generator.balls[2]])
-    #     assert ball_generator.balls[1].rect.center == (80, 80)
-    #
-    # def test_NotJoinBallsAfterDestroyChain_IfDifferentColor(self):
-    #     ball_generator = self.set_up_ball_generator([GREEN, BLUE, BLUE, RED])
-    #     ball_generator.destroy(
-    #         [ball_generator.balls[1], ball_generator.balls[2]])
-    #     assert (ball_generator.balls[0].rect.center == (40, 80) and
-    #             ball_generator.balls[1].rect.center == (160, 80)) is True
-    #
-    # def test_ChainInTail_ballsNotMoved(self):
-    #     ball_generator = self.set_up_ball_generator([BLUE, BLUE, GREEN, RED])
-    #     ball_generator.destroy(
-    #         [ball_generator.balls[0], ball_generator.balls[1]])
-    #     assert (ball_generator.balls[0].rect.center == (120, 80) and
-    #             ball_generator.balls[1].rect.center == (160, 80)) is True
-    #
-    # def test_ChainInHead_ballsNotMoved(self):
-    #     ball_generator = self.set_up_ball_generator([GREEN, RED, BLUE, BLUE])
-    #     ball_generator.destroy(
-    #         [ball_generator.balls[2], ball_generator.balls[3]])
-    #     assert (ball_generator.balls[0].rect.center == (40, 80) and
-    #             ball_generator.balls[1].rect.center == (80, 80)) is True
 
+class TestJoinAndStop(TestCase):
+
+    path = Path()
+
+    def test_join_two_balls(self):
+        ball_generator = self.setup_ball_generator(2)
+        ball_generator.join_balls(1)
+        assert ball_generator.balls[1].rect.center == (40, 80)
+
+    def test_join_many_balls(self):
+        ball_generator = self.setup_ball_generator(20)
+        ball_generator.join_balls(1)
+
+        expected_balls = self.setup_balls(20, (0, 80), GREEN)
+
+        assert are_lists_equal(expected_balls, ball_generator.balls) is True
+
+    def test_stop_one_ball(self):
+        ball_generator = self.setup_ball_generator(2)
+        ball_generator.stop_balls(1)
+        expected = [True, False]
+        actual = [ball.can_move for ball in ball_generator.balls]
+
+        assert are_lists_equal(expected, actual) is True
+
+    def test_stop_many_balls(self):
+        ball_generator = self.setup_ball_generator(20)
+        ball_generator.stop_balls(1)
+
+        expected = [True] + [False] * 19
+        actual = [ball.can_move for ball in ball_generator.balls]
+
+        assert are_lists_equal(expected, actual) is True
+
+    def setup_ball_generator(self, number_of_balls):
+        ball_generator = BallGenerator(self.path, number_of_balls)
+        ball_generator.balls = [Ball(GREEN, (0, 80), self.path)]
+        ball_generator.balls += self.setup_balls(number_of_balls - 1, (80, 80),
+                                                 GREEN)
+
+        return ball_generator
+
+    def setup_balls(self, amount, start_pos, color):
+        start_pos = self.path.nodes.index(start_pos)
+        step = (2 * BALL_RADIUS // self.path.step)
+        end_pos = start_pos + step * amount
+        positions = [self.path.nodes[i] for i in range(start_pos, end_pos,
+                                                       step)]
+        return [Ball(color, pos, self.path) for pos in positions]
+
+
+class TestHit(TestCase):
+    path = Path()
+
+    def test_one_combo_hit(self):
+        ball_generator = self.setup_ball_generator([GREEN, BLUE, BLUE, GREEN,
+                                                    GREEN])
+        assert are_lists_equal([], ball_generator.balls) is True
+
+    def test_stop_after_hit(self):
+        ball_generator = self.setup_ball_generator([RED, BLUE, BLUE, GREEN,
+                                                    YELLOW])
+        ball_0 = Ball(RED, (0, 80), self.path)
+        ball_1 = Ball(GREEN, (120, 80), self.path)
+        ball_2 = Ball(YELLOW, (160, 80), self.path)
+        ball_1.can_move = ball_2.can_move = False
+        expected = [ball_0, ball_1, ball_2]
+
+        assert are_lists_equal(expected, ball_generator.balls) is True
+
+    def test_join_after_hit(self):
+        ball_generator = self.setup_ball_generator([GREEN, BLUE, BLUE, GREEN,
+                                                    YELLOW])
+        ball_0 = Ball(GREEN, (0, 80), self.path)
+        ball_1 = Ball(GREEN, (40, 80), self.path)
+        ball_2 = Ball(YELLOW, (80, 80), self.path)
+        expected = [ball_0, ball_1, ball_2]
+
+        assert are_lists_equal(expected, ball_generator.balls) is True
+
+    def test_three_combo_after_hit(self):
+        pass
+
+    def setup_ball_generator(self, colors):
+        ball_generator = BallGenerator(self.path, 5)
+
+        positions = [(i, 80) for i in range(0, 161, 40)]
+        ball_generator.balls = [Ball(colors[i], positions[i], self.path)
+                                for i in range(5)]
+
+        shooting_manager = ShootingManager(ball_generator)
+        shooting_manager.handle_hit([ball_generator.balls[1],
+                                     ball_generator.balls[2]])
+
+        return ball_generator
+
+    def test_hit_1(self):
+        ball_generator = BallGenerator(self.path, 6)
+
+        positions = [(i, 80) for i in range(0, 201, 40)]
+        colors = [RED] * 2 + [YELLOW] * 2 + [BLUE] * 2
+        ball_generator.balls = [Ball(colors[i], positions[i], self.path)
+                                for i in range(6)]
+        shooting_manager = ShootingManager(ball_generator)
+        shooting_manager.handle_hit([ball_generator.balls[2],
+                                     ball_generator.balls[3]])
+
+        blue_ball_1 = Ball(BLUE, (160, 80), self.path)
+        blue_ball_2 = Ball(BLUE, (200, 80), self.path)
+        blue_ball_1.can_move = blue_ball_2.can_move = False
+        expected = [Ball(RED, (0, 80), self.path),
+                    Ball(RED, (40, 80), self.path), blue_ball_1, blue_ball_2]
+
+        assert are_lists_equal(expected, ball_generator.balls) is True
+
+    def test_hit_2(self):
+        ball_generator = BallGenerator(self.path, 5)
+
+        positions = [(i, 80) for i in range(0, 161, 40)]
+        colors = [BLUE] + [RED] * 2 + [BLUE] * 2
+        ball_generator.balls = [Ball(colors[i], positions[i], self.path)
+                                for i in range(5)]
+        shooting_manager = ShootingManager(ball_generator)
+        shooting_manager.handle_hit([ball_generator.balls[1],
+                                     ball_generator.balls[2]])
+
+        assert are_lists_equal([], ball_generator.balls) is True
 
 
 
