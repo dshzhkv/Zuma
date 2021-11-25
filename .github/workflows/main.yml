@@ -33,4 +33,7 @@ jobs:
       - name: Test with pytest
         run: |
           pytest tests.py
+      - name: Check coverage
+          run: |
+            pytest --cov=Zuma
 
