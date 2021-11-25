@@ -1,8 +1,8 @@
 from unittest import TestCase
-from game.BallGenerator import BallGenerator
-from game.Path import Path
-from game.Sprites import *
-from game.ShootingManager import ShootingManager
+from BallGenerator import BallGenerator
+from Path import Path
+from Sprites import *
+from ShootingManager import ShootingManager
 
 
 def are_lists_equal(expected, actual):
