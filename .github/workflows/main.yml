@@ -35,5 +35,5 @@ jobs:
           pytest tests.py
       - name: Check coverage
         run: |
-            pytest --cov=game
+          pytest --cov=game
 

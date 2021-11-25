@@ -1,8 +1,8 @@
 from unittest import TestCase
-from Zuma.game.BallGenerator import BallGenerator
-from Zuma.game.Path import Path
-from Zuma.game.Sprites import *
-from Zuma.game.ShootingManager import ShootingManager
+from game.BallGenerator import BallGenerator
+from game.Path import Path
+from game.Sprites import *
+from game.ShootingManager import ShootingManager
 
 
 def are_lists_equal(expected, actual):
