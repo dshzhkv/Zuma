@@ -1,10 +1,10 @@
 from unittest import TestCase
-from Params import *
+from Zuma.Params import *
 from unittest.mock import patch
-from BallGenerator import BallGenerator
-from Path import Path
-from Sprites import *
-from ShootingManager import ShootingManager
+from Zuma.BallGenerator import BallGenerator
+from Zuma.Path import Path
+from Zuma.Sprites import *
+from Zuma.ShootingManager import ShootingManager
 
 
 def are_lists_equal(expected, actual):
