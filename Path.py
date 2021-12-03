@@ -10,11 +10,11 @@ class Path:
         self.nodes = []
         self.set_path(form)
 
-    def set_path(self, form):
-        if form == 'square':
+    def set_path(self, level):
+        if level == 1:
             self.set_square_path()
-        elif form == 'circle':
-            self.set_circle_path()
+        elif level == 2:
+            self.set_square_path()
 
     def set_square_path(self):
         self.nodes += [(i, 80) for i in

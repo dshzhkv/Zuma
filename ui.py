@@ -48,18 +48,21 @@ class Window:
 
 
 class UiManager:
-    def __init__(self, screen, *sprites):
+    def __init__(self, screen, level):
         self.screen = screen
 
         self.start_game_btn = Button('Начать игру', SCREEN_CENTER)
         self.start_window = Window(buttons=[self.start_game_btn])
 
-        self.level_1_label = Label('Уровень 1', (WIDTH // 2, 40))
-        self.game_window = Window(sprites=[sprite for sprite in
-                                                  sprites], labels=[self.level_1_label])
+        self.level_label = Label('Уровень {}'.format(level.number),
+                                   (WIDTH // 2, 40))
+        sprites = [level.player, level.path, level.ball_generator,
+                   level.finish, level.shooting_manager]
+        self.game_window = Window(sprites=[sprite for sprite in sprites],
+                                  labels=[self.level_label])
 
         self.continue_btn = Button('Продолжить', SCREEN_CENTER)
-        self.win_window = Window(buttons=[self.continue_btn])
+        self.win_level_window = Window(buttons=[self.continue_btn])
 
         self.start_again_btn = Button('Начать сначала', SCREEN_CENTER,
                                       background_color=TAUPE, font_color=BROWN)
