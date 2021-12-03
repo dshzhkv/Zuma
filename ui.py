@@ -64,9 +64,21 @@ class UiManager:
         self.continue_btn = Button('Продолжить', SCREEN_CENTER)
         self.win_level_window = Window(buttons=[self.continue_btn])
 
-        self.start_again_btn = Button('Начать сначала', SCREEN_CENTER,
-                                      background_color=TAUPE, font_color=BROWN)
-        self.lose_window = Window(BROWN, buttons=[self.start_again_btn])
+        self.start_level_again_btn = Button('Начать сначала', SCREEN_CENTER,
+                                            background_color=TAUPE,
+                                            font_color=BROWN)
+        self.lose_window = Window(BROWN, buttons=[self.start_level_again_btn])
+
+        self.finish_btn = Button('Закончить', (WIDTH // 2, HEIGHT // 2 +
+                                               2 * BTN_HEIGHT))
+        self.start_game_again_btn = Button('Начать сначала', SCREEN_CENTER)
+        self.win_label = Label('Вы прошли игру!', (WIDTH // 2, HEIGHT // 2 -
+                                               2 * BTN_HEIGHT))
+        self.win_game_window = Window(buttons=[self.start_game_again_btn,
+                                               self.finish_btn],
+                                      labels=[self.win_label])
+
+
 
     def draw_button(self, button):
         width, height = button.width, button.height

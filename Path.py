@@ -15,6 +15,8 @@ class Path:
             self.set_square_path()
         elif level == 2:
             self.set_square_path()
+        elif level == 3:
+            self.set_square_path()
 
     def set_square_path(self):
         self.nodes += [(i, 80) for i in

@@ -15,7 +15,7 @@ class Level:
         self.number = number
         self.player = Player()
         self.path = Path(number)
-        self.ball_generator = BallGenerator(self.path, number * 50)
+        self.ball_generator = BallGenerator(self.path, number * 10)
         self.finish = Finish(self.path, self.ball_generator.balls)
         self.shooting_manager = ShootingManager(self.ball_generator)
 
@@ -33,7 +33,7 @@ class Game:
 
     def play(self):
         self.start_game()
-        while not self.is_quit and self.level_num <= 3:
+        while not self.is_quit:
             self.setup_new_game()
             self.play_game()
 
@@ -75,13 +75,16 @@ class Game:
 
             if self.level.shooting_manager.is_win:
                 game_finished = True
-                self.win_game()
-                self.level_num += 1
+                if self.level_num == 3:
+                    self.win_game()
+                else:
+                    self.win_level()
+                    self.level_num += 1
             elif self.level.finish.is_finished:
                 game_finished = True
-                self.lose_game()
+                self.lose_level()
 
-    def win_game(self):
+    def win_level(self):
         game_continued = False
         while not game_continued and not self.is_quit:
             mouse = pygame.mouse.get_pos()
@@ -93,7 +96,7 @@ class Game:
                         game_continued = True
             self.update_display(self.ui_manager.win_level_window)
 
-    def lose_game(self):
+    def lose_level(self):
         game_continued = False
         while not game_continued and not self.is_quit:
             mouse = pygame.mouse.get_pos()
@@ -101,12 +104,25 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.is_quit = True
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.ui_manager.start_again_btn.rect.collidepoint(mouse):
+                    if self.ui_manager.start_level_again_btn.rect.collidepoint(mouse):
                         game_continued = True
             self.update_display(self.ui_manager.lose_window)
 
-    def quit_game(self):
-        pass
+    def win_game(self):
+        on_win_window = True
+        while on_win_window and not self.is_quit:
+            mouse = pygame.mouse.get_pos()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.is_quit = True
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.ui_manager.start_game_again_btn.rect.collidepoint(mouse):
+                        on_win_window = False
+                        self.level_num = 1
+                    elif self.ui_manager.finish_btn.rect.collidepoint(mouse):
+                        self.is_quit = True
+
+            self.update_display(self.ui_manager.win_game_window)
 
     def update_sprites(self):
         self.level.player.update()
