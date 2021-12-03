@@ -1,3 +1,5 @@
+import pygame
+
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
@@ -14,3 +16,7 @@ FPS = 30
 PLAYER_SIZE = (100, 100)
 BALL_SIZE = (40, 40)
 BALL_RADIUS = 20
+
+BTN_WIDTH, BTN_HEIGHT = 210, 60
+
+FONT_SIZE = 15

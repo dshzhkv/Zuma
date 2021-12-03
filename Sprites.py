@@ -102,7 +102,7 @@ class Finish(pygame.sprite.Sprite):
 
         self.balls = balls
 
-        self.isFinished = False
+        self.is_finished = False
 
         self.image = pygame.Surface((60, 60))
         self.rect = self.image.get_rect(center=path.end)
@@ -110,7 +110,7 @@ class Finish(pygame.sprite.Sprite):
     def update(self):
         for ball in self.balls:
             if self.rect.colliderect(ball.rect):
-                self.isFinished = True
+                self.is_finished = True
                 break
 
     def draw(self, screen):

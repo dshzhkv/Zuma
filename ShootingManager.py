@@ -10,7 +10,7 @@ class ShootingManager:
         self.charged_ball = ShootingBall(random.choice(
             self.ball_generator.colors))
 
-        self.win = False
+        self.is_win = False
 
         self.shooting_balls = []
 
@@ -57,7 +57,7 @@ class ShootingManager:
                     self.ball_generator.insert(i, shooting_ball)
                 self.shooting_balls.remove(shooting_ball)
                 if len(self.ball_generator.balls) == 0:
-                    self.win = True
+                    self.is_win = True
                 break
 
     def handle_combo(self, chain):
