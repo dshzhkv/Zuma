@@ -22,8 +22,10 @@ class BallGenerator:
     def update(self):
         for i in range(len(self.balls)):
             self.balls[i].update()
-            if not self.balls[i].can_move and (i == 0 or (self.balls[i - 1].can_move and self.balls[i].rect.center == self.count_center(i - 1))):
+
+            if not self.balls[i].can_move and (i == 0 or (self.balls[i - 1].can_move and self.balls[i].rect.colliderect(self.balls[i-1].rect))):
                 self.balls[i].can_move = True
+                # self.balls[i].rect.center = self.count_center(i - 1)
 
     def draw(self, screen):
         for ball in self.balls:
