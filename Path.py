@@ -40,5 +40,5 @@ class Path:
 
     def draw(self, screen):
         for i in range(len(self.nodes) - 1):
-            pygame.draw.line(screen, WHITE, self.nodes[i], self.nodes[i + 1],
+            pygame.draw.line(screen, DARK_TAUPE, self.nodes[i], self.nodes[i + 1],
                              10)
