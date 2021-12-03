@@ -14,6 +14,8 @@ class ShootingManager:
 
         self.shooting_balls = []
 
+        self.combo_chain = []
+
     def shoot(self, target):
         shooting_ball = self.charged_ball
         shooting_ball.set_target(target)
@@ -31,6 +33,8 @@ class ShootingManager:
 
     def update(self):
         self.charged_ball.update()
+        if self.combo_chain:
+            self.handle_combo(self.combo_chain)
         for ball in self.shooting_balls:
             ball.update()
             self.remove_flown_away(ball)
@@ -48,7 +52,7 @@ class ShootingManager:
             if shooting_ball.rect.colliderect(ball.rect):
                 chain = self.collect_chain(i, shooting_ball.color)
                 if len(chain) > 1:
-                    self.handle_hit(chain)
+                    self.handle_combo(chain)
                 else:
                     self.ball_generator.insert(i, shooting_ball)
                 self.shooting_balls.remove(shooting_ball)
@@ -56,7 +60,7 @@ class ShootingManager:
                     self.win = True
                 break
 
-    def handle_hit(self, chain):
+    def handle_combo(self, chain):
 
         chain_tail = self.ball_generator.balls.index(chain[0])
         chain_head = self.ball_generator.balls.index(chain[-1])
@@ -75,10 +79,12 @@ class ShootingManager:
             self.ball_generator.join_balls(chain_tail)
             chain = self.ball_generator.balls[chain_tail - 1:len(chain)]
             if len(chain) > 2:
-                self.handle_hit(chain)
+                self.combo_chain = chain
+            else:
+                self.combo_chain = []
         else:
+            self.combo_chain = []
             self.ball_generator.stop_balls(chain_tail)
-            return
 
     def collect_chain(self, ball_index, color):
         left_half = self.collect_half_chain(ball_index - 1, -1, color)

@@ -232,8 +232,10 @@ class TestHit(TestCase):
                                 for i in range(5)]
 
         shooting_manager = ShootingManager(ball_generator)
-        shooting_manager.handle_hit([ball_generator.balls[1],
-                                     ball_generator.balls[2]])
+        shooting_manager.handle_combo([ball_generator.balls[1],
+                                       ball_generator.balls[2]])
+        shooting_manager.update()
+        ball_generator.update()
 
         return ball_generator
 
@@ -245,8 +247,9 @@ class TestHit(TestCase):
         ball_generator.balls = [Ball(colors[i], positions[i], self.path)
                                 for i in range(6)]
         shooting_manager = ShootingManager(ball_generator)
-        shooting_manager.handle_hit([ball_generator.balls[2],
+        shooting_manager.handle_combo([ball_generator.balls[2],
                                      ball_generator.balls[3]])
+        shooting_manager.update()
 
         blue_ball_1 = Ball(BLUE, (160, 80), self.path)
         blue_ball_2 = Ball(BLUE, (200, 80), self.path)
@@ -264,8 +267,11 @@ class TestHit(TestCase):
         ball_generator.balls = [Ball(colors[i], positions[i], self.path)
                                 for i in range(5)]
         shooting_manager = ShootingManager(ball_generator)
-        shooting_manager.handle_hit([ball_generator.balls[1],
+        shooting_manager.handle_combo([ball_generator.balls[1],
                                      ball_generator.balls[2]])
+        shooting_manager.update()
+        ball_generator.update()
+
 
         assert are_lists_equal([], ball_generator.balls) is True
 

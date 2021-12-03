@@ -54,7 +54,6 @@ class ShootingBall(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=SCREEN_CENTER)
 
         self.target = (0, 0)
-        self.angle = 0
         self.speed = 15
 
     def set_target(self, target):
@@ -62,7 +61,7 @@ class ShootingBall(pygame.sprite.Sprite):
                        target[1] - self.rect.center[1])
         length = math.hypot(*self.target)
         self.target = (self.target[0] / length, self.target[1] / length)
-        self.angle = math.degrees(math.atan2(-self.target[1], self.target[0]))
+        # self.angle = math.degrees(math.atan2(-self.target[1], self.target[0]))
 
     def update(self):
         self.rect.center = (self.rect.center[0] + self.target[0] * self.speed,

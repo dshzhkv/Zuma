@@ -54,8 +54,9 @@ class Game:
 
     def update_sprites(self):
         self.player.update()
-        self.ball_generator.update()
+
         self.shooting_manager.update()
+        self.ball_generator.update()
         self.finish.update()
 
     def update_display(self):
