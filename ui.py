@@ -3,7 +3,7 @@ from Params import *
 
 class Button:
     def __init__(self, button_title, position, width=BTN_WIDTH,
-                 height=BTN_HEIGHT, background_color=BLACK, font_color=WHITE):
+                 height=BTN_HEIGHT, background_color=BROWN, font_color=TAUPE):
         self.title = button_title
         self.font = pygame.font.Font('fonts/Azov.ttf', FONT_SIZE)
         self.title_width, self.title_height = self.font.size(self.title)
@@ -27,7 +27,7 @@ class Label:
 
 
 class Window:
-    def __init__(self, background_color=WHITE, buttons=None, labels=None,
+    def __init__(self, background_color=TAUPE, buttons=None, labels=None,
                  sprites=None):
         if buttons is None:
             self.buttons = []
@@ -47,7 +47,6 @@ class Window:
         self.background_color = background_color
 
 
-
 class UiManager:
     def __init__(self, screen, *sprites):
         self.screen = screen
@@ -56,15 +55,15 @@ class UiManager:
         self.start_window = Window(buttons=[self.start_game_btn])
 
         self.level_1_label = Label('Уровень 1', (WIDTH // 2, 40))
-        self.game_window = Window(TAUPE, sprites=[sprite for sprite in
+        self.game_window = Window(sprites=[sprite for sprite in
                                                   sprites], labels=[self.level_1_label])
 
         self.continue_btn = Button('Продолжить', SCREEN_CENTER)
         self.win_window = Window(buttons=[self.continue_btn])
 
         self.start_again_btn = Button('Начать сначала', SCREEN_CENTER,
-                                      background_color=WHITE, font_color=BLACK)
-        self.lose_window = Window(BLACK, buttons=[self.start_again_btn])
+                                      background_color=TAUPE, font_color=BROWN)
+        self.lose_window = Window(BROWN, buttons=[self.start_again_btn])
 
     def draw_button(self, button):
         width, height = button.width, button.height
