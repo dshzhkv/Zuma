@@ -17,8 +17,18 @@ class Button:
         self.font_color = font_color
 
 
+class Label:
+    def __init__(self, text, position, color=BROWN):
+        self.font = pygame.font.Font('fonts/Azov.ttf', FONT_SIZE)
+        self.text = self.font.render(text, True, color)
+        self.width, self.height = self.font.size(text)
+        self.x_start, self.y_start = position[0] - self.width // 2, \
+                                     position[1] - self.height // 2
+
+
 class Window:
-    def __init__(self, background_color=WHITE, buttons=None, sprites=None):
+    def __init__(self, background_color=WHITE, buttons=None, labels=None,
+                 sprites=None):
         if buttons is None:
             self.buttons = []
         else:
@@ -28,6 +38,11 @@ class Window:
             self.spites = []
         else:
             self.spites = sprites
+
+        if labels is None:
+            self.labels = []
+        else:
+            self.labels = labels
 
         self.background_color = background_color
 
@@ -40,8 +55,9 @@ class UiManager:
         self.start_game_btn = Button('Начать игру', SCREEN_CENTER)
         self.start_window = Window(buttons=[self.start_game_btn])
 
+        self.level_1_label = Label('Уровень 1', (WIDTH // 2, 40))
         self.game_window = Window(TAUPE, sprites=[sprite for sprite in
-                                                  sprites])
+                                                  sprites], labels=[self.level_1_label])
 
         self.continue_btn = Button('Продолжить', SCREEN_CENTER)
         self.win_window = Window(buttons=[self.continue_btn])
@@ -65,6 +81,22 @@ class UiManager:
         self.screen.fill(window.background_color)
         for button in window.buttons:
             self.draw_button(button)
+        for label in window.labels:
+            self.put_static_label(label)
         for sprite in window.spites:
             sprite.draw(self.screen)
+
+    # просто пишет текст
+    def put_static_label(self, label):
+        self.screen.blit(label.text, (label.x_start, label.y_start))
+
+    # для надписей которые меняются во время игры (сообщения об ошибках, очки,
+    # промазал/убил/ранил).
+    # def put_dynamic_label(self, label, color=BUTTON_BLUE):
+    #     pygame.draw.rect(screen, color, (label.x_start - label.width / 2 -
+    #                                      cell_size, label.y_start,
+    #                                      label.width + 2 * cell_size,
+    #                                      cell_size))
+    #     self.put_static_label(label)
+
 
