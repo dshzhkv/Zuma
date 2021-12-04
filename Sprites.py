@@ -45,13 +45,13 @@ class Ball(pygame.sprite.Sprite):
 
 
 class ShootingBall(pygame.sprite.Sprite):
-    def __init__(self, color):
+    def __init__(self, color, pos=SCREEN_CENTER):
         pygame.sprite.Sprite.__init__(self)
 
         self.color = color
 
         self.image = pygame.Surface(BALL_SIZE)
-        self.rect = self.image.get_rect(center=SCREEN_CENTER)
+        self.rect = self.image.get_rect(center=pos)
 
         self.target = (0, 0)
         self.speed = 15
@@ -72,8 +72,10 @@ class ShootingBall(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, pos=SCREEN_CENTER):
         pygame.sprite.Sprite.__init__(self)
+
+        self.pos = pos
 
         self.original_image = pygame.transform.smoothscale(
             pygame.image.load("original.png"), PLAYER_SIZE)
@@ -81,7 +83,7 @@ class Player(pygame.sprite.Sprite):
 
         self.image = self.original_image
 
-        self.rect = self.image.get_rect(center=SCREEN_CENTER)
+        self.rect = self.image.get_rect(center=pos)
 
         self.angle = 0
 
@@ -105,12 +107,10 @@ class Finish(pygame.sprite.Sprite):
 
         self.is_finished = False
 
-        # self.image = pygame.Surface((60, 60))
-
         self.image = pygame.transform.smoothscale(
-            pygame.image.load("star.png"), (114, 94))
+            pygame.image.load("star.png"), (80, 80))
         self.image.set_colorkey(BLACK)
-        self.rect = self.image.get_rect(center=path.end)
+        self.rect = self.image.get_rect(center=path.nodes[-1])
 
     def update(self):
         for ball in self.balls:
@@ -119,4 +119,5 @@ class Finish(pygame.sprite.Sprite):
                 break
 
     def draw(self, screen):
+
         screen.blit(self.image, (self.rect.x, self.rect.y))

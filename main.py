@@ -13,11 +13,14 @@ from ui import *
 class Level:
     def __init__(self, number):
         self.number = number
-        self.player = Player()
         self.path = Path(number)
         self.ball_generator = BallGenerator(self.path, number * 10)
+        if number == 1:
+            self.player = Player((530, 330))
+        else:
+            self.player = Player()
         self.finish = Finish(self.path, self.ball_generator.balls)
-        self.shooting_manager = ShootingManager(self.ball_generator)
+        self.shooting_manager = ShootingManager(self.ball_generator, self.player)
 
 class Game:
     def __init__(self):

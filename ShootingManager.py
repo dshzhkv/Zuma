@@ -4,11 +4,11 @@ import random
 
 
 class ShootingManager:
-    def __init__(self, ball_generator):
+    def __init__(self, ball_generator, player):
         self.ball_generator = ball_generator
-
+        self.player = player
         self.charged_ball = ShootingBall(random.choice(
-            self.ball_generator.colors))
+            self.ball_generator.colors), player.pos)
 
         self.is_win = False
 
@@ -24,7 +24,7 @@ class ShootingManager:
 
     def recharge(self):
         return ShootingBall(random.choice(
-            self.ball_generator.get_available_colors()))
+            self.ball_generator.get_available_colors()), self.player.pos)
 
     def draw(self, screen):
         self.charged_ball.draw(screen)
