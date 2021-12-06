@@ -37,11 +37,16 @@ class Ball(pygame.sprite.Sprite):
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, self.rect.center, BALL_RADIUS)
+        # if self.color is YELLOW:
+        #     screen.blit(pygame.image.load("images/pa"), (self.rect.x, self.rect.y))
 
     def __eq__(self, other):
         return self.color == other.color and \
                self.rect.center == other.rect.center and \
                self.can_move == other.can_move
+
+
+
 
 
 class ShootingBall(pygame.sprite.Sprite):
