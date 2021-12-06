@@ -1,15 +1,18 @@
 from Params import *
-from Sprites import Ball
+from Sprites import Ball, Bonus
 import random
+import datetime
 
 
 class BallGenerator:
     def __init__(self, path, number):
         self.path = path
-        self.colors = [Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW]
+        self.colors = [BLUE, RED, GREEN, YELLOW]
+        self.bonuses = [Bonus.Pause]
         self.balls = []
         self.number_to_generate = number
         self.number_of_generated = 0
+        self.start_time = datetime.datetime.now()
 
     def generate(self):
         if self.number_of_generated < self.number_to_generate:
@@ -28,6 +31,15 @@ class BallGenerator:
                                 self.balls[i].rect.colliderect(self.balls[i-1].rect))):
                 self.balls[i].can_move = True
                 # self.balls[i].rect.center = self.count_center(i - 1)
+        self.generate_bonus()
+
+    def generate_bonus(self):
+        cur_time = datetime.datetime.now()
+        if (cur_time - self.start_time).seconds == 15:
+            ball_with_bonus = random.choice(self.balls)
+            bonus = random.choice(self.bonuses)
+            ball_with_bonus.set_bonus(bonus, cur_time)
+            self.start_time = cur_time
 
     def draw(self, screen):
         for ball in self.balls:

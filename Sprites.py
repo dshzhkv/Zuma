@@ -3,10 +3,17 @@ import random
 import math
 from enum import Enum
 from Params import *
+import datetime
 
 
 class Bonus(Enum):
     Pause = 0
+
+
+BONUS_IMAGES = {Bonus.Pause: {YELLOW: 'images/pause_yellow.png',
+                              GREEN: 'images/pause_green.png',
+                              BLUE: 'images/pause_blue.png',
+                              RED: 'images/pause_red.png'}}
 
 
 class Ball(pygame.sprite.Sprite):
@@ -23,10 +30,19 @@ class Ball(pygame.sprite.Sprite):
 
         self.can_move = True
         self.bonus = None
+        self.bonus_time = None
+
+    def set_bonus(self, bonus, time):
+        self.bonus = bonus
+        self.bonus_time = time
 
     def update(self):
         if self.can_move:
             self.move(1)
+        if self.bonus is not None and \
+                (datetime.datetime.now() - self.bonus_time).seconds == 15:
+            self.bonus = None
+            self.bonus_time = None
 
     def move(self, steps):
         self.pos_in_path += steps
@@ -34,9 +50,9 @@ class Ball(pygame.sprite.Sprite):
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, self.rect.center, BALL_RADIUS)
-        if self.bonus is Bonus.Pause:
+        if self.bonus is not None:
             screen.blit(pygame.image.load(
-                'images/pause_{}.png'.format(self.color.name.lower())),
+                BONUS_IMAGES[self.bonus][self.color]),
                 (self.rect.x, self.rect.y))
 
     def __eq__(self, other):
@@ -80,7 +96,7 @@ class Player(pygame.sprite.Sprite):
 
         self.original_image = pygame.transform.smoothscale(
             pygame.image.load("images/player.png"), PLAYER_SIZE)
-        self.original_image.set_colorkey(Color.BLACK)
+        self.original_image.set_colorkey(BLACK)
 
         self.image = self.original_image
 
@@ -93,7 +109,7 @@ class Player(pygame.sprite.Sprite):
         rel_x, rel_y = mouse_x - self.rect.x, mouse_y - self.rect.y
         self.angle = (180 / math.pi) * (-math.atan2(rel_y, rel_x)) + 90
         self.image = pygame.transform.rotate(self.original_image, self.angle)
-        self.image.set_colorkey(Color.BLACK)
+        self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect(center=self.rect.center)
 
     def draw(self, screen):
@@ -110,7 +126,7 @@ class Finish(pygame.sprite.Sprite):
 
         self.image = pygame.transform.smoothscale(
             pygame.image.load("images/star.png"), (80, 80))
-        self.image.set_colorkey(Color.BLACK)
+        self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect(center=path.nodes[-1])
 
     def update(self):
