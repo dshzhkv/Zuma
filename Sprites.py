@@ -78,7 +78,7 @@ class Player(pygame.sprite.Sprite):
         self.pos = pos
 
         self.original_image = pygame.transform.smoothscale(
-            pygame.image.load("original.png"), PLAYER_SIZE)
+            pygame.image.load("images/original.png"), PLAYER_SIZE)
         self.original_image.set_colorkey(BLACK)
 
         self.image = self.original_image
@@ -108,7 +108,7 @@ class Finish(pygame.sprite.Sprite):
         self.is_finished = False
 
         self.image = pygame.transform.smoothscale(
-            pygame.image.load("star.png"), (80, 80))
+            pygame.image.load("images/star.png"), (80, 80))
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect(center=path.nodes[-1])
 
