@@ -12,7 +12,7 @@ class Path:
 
     def set_path(self, level):
         if level == 1:
-            self.set_spiral_path()
+            self.set_square_path()
         elif level == 2:
             self.set_spiral_path()
         elif level == 3:
