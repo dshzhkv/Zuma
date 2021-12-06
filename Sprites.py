@@ -8,12 +8,17 @@ import datetime
 
 class Bonus(Enum):
     Pause = 0
+    Reverse = 1
 
 
 BONUS_IMAGES = {Bonus.Pause: {YELLOW: 'images/pause_yellow.png',
                               GREEN: 'images/pause_green.png',
                               BLUE: 'images/pause_blue.png',
-                              RED: 'images/pause_red.png'}}
+                              RED: 'images/pause_red.png'},
+                Bonus.Reverse: {YELLOW: 'images/reverse_yellow',
+                                GREEN: 'images/reverse_green.png',
+                                BLUE: 'images/reverse_blue.png',
+                                RED: 'images/reverse_red.png'}}
 
 
 class Ball(pygame.sprite.Sprite):
