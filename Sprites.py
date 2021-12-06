@@ -5,11 +5,8 @@ from enum import Enum
 from Params import *
 
 
-class Direction(Enum):
-    Right = 0
-    Down = 1
-    Left = 2
-    Up = 3
+class Bonus(Enum):
+    Pause = 0
 
 
 class Ball(pygame.sprite.Sprite):
@@ -18,7 +15,6 @@ class Ball(pygame.sprite.Sprite):
 
         self.color = color
 
-        self.direction = Direction.Right
         self.path = path
         self.pos_in_path = self.path.nodes.index(center)
 
@@ -26,6 +22,7 @@ class Ball(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=center)
 
         self.can_move = True
+        self.bonus = None
 
     def update(self):
         if self.can_move:
@@ -37,16 +34,15 @@ class Ball(pygame.sprite.Sprite):
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, self.rect.center, BALL_RADIUS)
-        # if self.color is YELLOW:
-        #     screen.blit(pygame.image.load("images/pa"), (self.rect.x, self.rect.y))
+        if self.bonus is Bonus.Pause:
+            screen.blit(pygame.image.load(
+                'images/pause_{}.png'.format(self.color.name.lower())),
+                (self.rect.x, self.rect.y))
 
     def __eq__(self, other):
         return self.color == other.color and \
                self.rect.center == other.rect.center and \
                self.can_move == other.can_move
-
-
-
 
 
 class ShootingBall(pygame.sprite.Sprite):
@@ -83,8 +79,8 @@ class Player(pygame.sprite.Sprite):
         self.pos = pos
 
         self.original_image = pygame.transform.smoothscale(
-            pygame.image.load("images/original.png"), PLAYER_SIZE)
-        self.original_image.set_colorkey(BLACK)
+            pygame.image.load("images/player.png"), PLAYER_SIZE)
+        self.original_image.set_colorkey(Color.BLACK)
 
         self.image = self.original_image
 
@@ -97,7 +93,7 @@ class Player(pygame.sprite.Sprite):
         rel_x, rel_y = mouse_x - self.rect.x, mouse_y - self.rect.y
         self.angle = (180 / math.pi) * (-math.atan2(rel_y, rel_x)) + 90
         self.image = pygame.transform.rotate(self.original_image, self.angle)
-        self.image.set_colorkey(BLACK)
+        self.image.set_colorkey(Color.BLACK)
         self.rect = self.image.get_rect(center=self.rect.center)
 
     def draw(self, screen):
@@ -114,7 +110,7 @@ class Finish(pygame.sprite.Sprite):
 
         self.image = pygame.transform.smoothscale(
             pygame.image.load("images/star.png"), (80, 80))
-        self.image.set_colorkey(BLACK)
+        self.image.set_colorkey(Color.BLACK)
         self.rect = self.image.get_rect(center=path.nodes[-1])
 
     def update(self):

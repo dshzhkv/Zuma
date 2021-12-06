@@ -6,7 +6,7 @@ import random
 class BallGenerator:
     def __init__(self, path, number):
         self.path = path
-        self.colors = [BLUE, RED, GREEN, YELLOW]
+        self.colors = [Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW]
         self.balls = []
         self.number_to_generate = number
         self.number_of_generated = 0
@@ -23,7 +23,9 @@ class BallGenerator:
         for i in range(len(self.balls)):
             self.balls[i].update()
 
-            if not self.balls[i].can_move and (i == 0 or (self.balls[i - 1].can_move and self.balls[i].rect.colliderect(self.balls[i-1].rect))):
+            if not self.balls[i].can_move and \
+                    (i == 0 or (self.balls[i - 1].can_move and
+                                self.balls[i].rect.colliderect(self.balls[i-1].rect))):
                 self.balls[i].can_move = True
                 # self.balls[i].rect.center = self.count_center(i - 1)
 
