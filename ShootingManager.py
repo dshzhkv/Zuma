@@ -16,6 +16,8 @@ class ShootingManager:
 
         self.combo_chain = []
 
+        self.points = 0
+
     def shoot(self, target):
         shooting_ball = self.charged_ball
         shooting_ball.set_target(target)
@@ -32,8 +34,10 @@ class ShootingManager:
             ball.draw(screen)
 
     def update(self):
+        self.points = 0
         self.charged_ball.update()
         if self.combo_chain:
+            self.points += 10
             self.handle_combo(self.combo_chain)
         for ball in self.shooting_balls:
             ball.update()
@@ -52,6 +56,7 @@ class ShootingManager:
             if shooting_ball.rect.colliderect(ball.rect):
                 chain = self.collect_chain(i, shooting_ball.color)
                 if len(chain) > 1:
+                    self.points += 10
                     self.handle_combo(chain)
                 else:
                     self.ball_generator.insert(i, shooting_ball)

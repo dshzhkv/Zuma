@@ -20,13 +20,13 @@ class Button:
 class Label:
     def __init__(self, text, position, color=BROWN):
         self.font = pygame.font.Font('fonts/Azov.ttf', FONT_SIZE)
+        self.color = color
         self.text = self.font.render(text, True, color)
         self.width, self.height = self.font.size(text)
         self.x_start, self.y_start = position[0] - self.width // 2, \
                                      position[1] - self.height // 2
 
-
-class Window:
+class Display:
     def __init__(self, background_color=TAUPE, buttons=None, labels=None,
                  sprites=None):
         if buttons is None:
@@ -50,35 +50,35 @@ class Window:
 class UiManager:
     def __init__(self, screen, level):
         self.screen = screen
+        self.level = level
 
         self.start_game_btn = Button('Начать игру', SCREEN_CENTER)
-        self.start_window = Window(buttons=[self.start_game_btn])
+        self.start_game_display = Display(buttons=[self.start_game_btn])
 
         self.level_label = Label('Уровень {}'.format(level.number),
                                    (WIDTH // 2, 40))
         sprites = [level.player, level.path, level.ball_generator,
                    level.finish, level.shooting_manager]
-        self.game_window = Window(sprites=[sprite for sprite in sprites],
-                                  labels=[self.level_label])
+        self.game_display = Display(sprites=[sprite for sprite in sprites],
+                                    labels=[self.level_label])
 
         self.continue_btn = Button('Продолжить', SCREEN_CENTER)
-        self.win_level_window = Window(buttons=[self.continue_btn])
+        self.win_level_display = Display(buttons=[self.continue_btn])
 
         self.start_level_again_btn = Button('Начать сначала', SCREEN_CENTER,
                                             background_color=TAUPE,
                                             font_color=BROWN)
-        self.lose_window = Window(BROWN, buttons=[self.start_level_again_btn])
+        self.lose_level_display = Display(BROWN,
+                                          buttons=[self.start_level_again_btn])
 
         self.finish_btn = Button('Закончить', (WIDTH // 2, HEIGHT // 2 +
                                                2 * BTN_HEIGHT))
         self.start_game_again_btn = Button('Начать сначала', SCREEN_CENTER)
         self.win_label = Label('Вы прошли игру!', (WIDTH // 2, HEIGHT // 2 -
                                                2 * BTN_HEIGHT))
-        self.win_game_window = Window(buttons=[self.start_game_again_btn,
-                                               self.finish_btn],
-                                      labels=[self.win_label])
-
-
+        self.win_game_display = Display(buttons=[self.start_game_again_btn,
+                                                 self.finish_btn],
+                                        labels=[self.win_label])
 
     def draw_button(self, button):
         width, height = button.width, button.height
@@ -96,21 +96,16 @@ class UiManager:
         for button in window.buttons:
             self.draw_button(button)
         for label in window.labels:
-            self.put_static_label(label)
+            self.put_label(label)
         for sprite in window.spites:
             sprite.draw(self.screen)
 
-    # просто пишет текст
-    def put_static_label(self, label):
+    def show_points(self, points):
+        points_label = Label('Очки: {}'.format(points), (WIDTH // 4, 40))
+        self.put_label(points_label)
+
+    def put_label(self, label, color=TAUPE):
+        pygame.draw.rect(self.screen, color, (label.x_start - label.width / 2,
+                                              label.y_start, label.width,
+                                              label.height))
         self.screen.blit(label.text, (label.x_start, label.y_start))
-
-    # для надписей которые меняются во время игры (сообщения об ошибках, очки,
-    # промазал/убил/ранил).
-    # def put_dynamic_label(self, label, color=BUTTON_BLUE):
-    #     pygame.draw.rect(screen, color, (label.x_start - label.width / 2 -
-    #                                      cell_size, label.y_start,
-    #                                      label.width + 2 * cell_size,
-    #                                      cell_size))
-    #     self.put_static_label(label)
-
-

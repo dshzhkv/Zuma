@@ -33,9 +33,11 @@ class Game:
         self.level_num = 1
         self.setup_new_game()
         self.is_quit = False
+        self.points = 0
 
     def play(self):
-        self.start_game()
+        self.continue_game(self.ui_manager.start_game_btn,
+                           self.ui_manager.start_game_display)
         while not self.is_quit:
             self.setup_new_game()
             self.play_game()
@@ -45,19 +47,6 @@ class Game:
     def setup_new_game(self):
         self.level = Level(self.level_num)
         self.ui_manager = UiManager(self.screen, self.level)
-
-    def start_game(self):
-        game_started = False
-
-        while not game_started and not self.is_quit:
-            mouse = pygame.mouse.get_pos()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.is_quit = True
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.ui_manager.start_game_btn.rect.collidepoint(mouse):
-                        game_started = True
-            self.update_display(self.ui_manager.start_window)
 
     def play_game(self):
         game_finished = False
@@ -74,20 +63,23 @@ class Game:
                     self.level.shooting_manager.shoot(pygame.mouse.get_pos())
 
             self.update_sprites()
-            self.update_display(self.ui_manager.game_window)
+            self.update_display(self.ui_manager.game_display)
+
 
             if self.level.shooting_manager.is_win:
                 game_finished = True
                 if self.level_num == 3:
                     self.win_game()
                 else:
-                    self.win_level()
+                    self.continue_game(self.ui_manager.continue_btn,
+                                       self.ui_manager.win_level_display)
                     self.level_num += 1
             elif self.level.finish.is_finished:
                 game_finished = True
-                self.lose_level()
+                self.continue_game(self.ui_manager.start_level_again_btn,
+                                   self.ui_manager.lose_level_display)
 
-    def win_level(self):
+    def continue_game(self, button, window):
         game_continued = False
         while not game_continued and not self.is_quit:
             mouse = pygame.mouse.get_pos()
@@ -95,21 +87,9 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.is_quit = True
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.ui_manager.continue_btn.rect.collidepoint(mouse):
+                    if button.rect.collidepoint(mouse):
                         game_continued = True
-            self.update_display(self.ui_manager.win_level_window)
-
-    def lose_level(self):
-        game_continued = False
-        while not game_continued and not self.is_quit:
-            mouse = pygame.mouse.get_pos()
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.is_quit = True
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.ui_manager.start_level_again_btn.rect.collidepoint(mouse):
-                        game_continued = True
-            self.update_display(self.ui_manager.lose_window)
+            self.update_display(window)
 
     def win_game(self):
         on_win_window = True
@@ -125,16 +105,19 @@ class Game:
                     elif self.ui_manager.finish_btn.rect.collidepoint(mouse):
                         self.is_quit = True
 
-            self.update_display(self.ui_manager.win_game_window)
+            self.update_display(self.ui_manager.win_game_display)
 
     def update_sprites(self):
         self.level.player.update()
         self.level.shooting_manager.update()
+        self.points += self.level.shooting_manager.points
         self.level.ball_generator.update()
         self.level.finish.update()
 
-    def update_display(self, window):
-        self.ui_manager.draw_window(window)
+    def update_display(self, display):
+        self.ui_manager.draw_window(display)
+        if display is self.ui_manager.game_display:
+            self.ui_manager.show_points(self.points)
         pygame.display.update()
 
 
