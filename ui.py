@@ -80,6 +80,12 @@ class UiManager:
                                                  self.finish_btn],
                                         labels=[self.win_label])
 
+        self.new_game_button = Button('Новая игра', SCREEN_CENTER,
+                                      background_color=TAUPE,
+                                      font_color=BROWN)
+        self.lose_game_display = Display(BROWN,
+                                         buttons=[self.new_game_button])
+
     def draw_button(self, button):
         width, height = button.width, button.height
         x_start, y_start = button.x_start, button.y_start
@@ -103,6 +109,13 @@ class UiManager:
     def show_points(self, points):
         points_label = Label('Очки: {}'.format(points), (WIDTH // 4, 40))
         self.put_label(points_label)
+
+    def show_lives(self, lives):
+
+        self.put_label(Label(str(lives), (3 * WIDTH // 4 + 30, 40)))
+        self.screen.blit(pygame.transform.smoothscale(
+            pygame.image.load("images/life.png"), (20, 20)),
+            (3 * WIDTH // 4, 30))
 
     def put_label(self, label, color=TAUPE):
         pygame.draw.rect(self.screen, color, (label.x_start - label.width / 2,

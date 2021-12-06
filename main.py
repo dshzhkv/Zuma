@@ -15,7 +15,7 @@ class Level:
         self.number = number
         self.path = Path(number)
         self.ball_generator = BallGenerator(self.path, number * 10)
-        if number == 1:
+        if number == 2:
             self.player = Player((530, 330))
         else:
             self.player = Player()
@@ -34,6 +34,7 @@ class Game:
         self.setup_new_game()
         self.is_quit = False
         self.points = 0
+        self.lives = 2
 
     def play(self):
         self.continue_game(self.ui_manager.start_game_btn,
@@ -76,8 +77,17 @@ class Game:
                     self.level_num += 1
             elif self.level.finish.is_finished:
                 game_finished = True
-                self.continue_game(self.ui_manager.start_level_again_btn,
-                                   self.ui_manager.lose_level_display)
+                self.lives -= 1
+                if self.lives == 0:
+                    self.continue_game(self.ui_manager.new_game_button,
+                                       self.ui_manager.lose_game_display)
+                    self.level_num = 1
+                    self.lives = 2
+                    self.points = 0
+                else:
+                    self.continue_game(self.ui_manager.start_level_again_btn,
+                                       self.ui_manager.lose_level_display)
+
 
     def continue_game(self, button, window):
         game_continued = False
@@ -111,6 +121,8 @@ class Game:
         self.level.player.update()
         self.level.shooting_manager.update()
         self.points += self.level.shooting_manager.points
+        if self.points != 0 and self.points % 500 == 0:
+            self.lives += 1
         self.level.ball_generator.update()
         self.level.finish.update()
 
@@ -118,6 +130,7 @@ class Game:
         self.ui_manager.draw_window(display)
         if display is self.ui_manager.game_display:
             self.ui_manager.show_points(self.points)
+            self.ui_manager.show_lives(self.lives)
         pygame.display.update()
 
 
