@@ -12,7 +12,9 @@ class BallGenerator:
         self.balls = []
         self.number_to_generate = number
         self.number_of_generated = 0
-        self.start_time = datetime.datetime.now()
+
+        self.game_start_time = datetime.datetime.now()
+        self.pause_start_time = None
 
     def generate(self):
         if self.number_of_generated < self.number_to_generate:
@@ -23,23 +25,27 @@ class BallGenerator:
                 self.number_of_generated += 1
 
     def update(self):
-        for i in range(len(self.balls)):
-            self.balls[i].update()
+        if self.pause_start_time is None:
+            for i in range(len(self.balls)):
+                self.balls[i].update()
 
-            if not self.balls[i].can_move and \
-                    (i == 0 or (self.balls[i - 1].can_move and
-                                self.balls[i].rect.colliderect(self.balls[i-1].rect))):
-                self.balls[i].can_move = True
-                # self.balls[i].rect.center = self.count_center(i - 1)
+                if not self.balls[i].can_move and \
+                        (i == 0 or (self.balls[i - 1].can_move and
+                                    self.balls[i].rect.colliderect(self.balls[i-1].rect))):
+                    self.balls[i].can_move = True
+                    # self.balls[i].rect.center = self.count_center(i - 1)
+        else:
+            if (datetime.datetime.now() - self.pause_start_time).seconds == 10:
+                self.pause_start_time = None
         self.generate_bonus()
 
     def generate_bonus(self):
         cur_time = datetime.datetime.now()
-        if (cur_time - self.start_time).seconds == 15:
+        if (cur_time - self.game_start_time).seconds == 15:
             ball_with_bonus = random.choice(self.balls)
             bonus = random.choice(self.bonuses)
             ball_with_bonus.set_bonus(bonus, cur_time)
-            self.start_time = cur_time
+            self.game_start_time = cur_time
 
     def draw(self, screen):
         for ball in self.balls:
@@ -62,6 +68,8 @@ class BallGenerator:
 
     def destroy(self, chain):
         for ball in chain:
+            if ball.bonus is Bonus.Pause:
+                self.pause_start_time = datetime.datetime.now()
             self.balls.remove(ball)
 
     def join_balls(self, tail_index):
