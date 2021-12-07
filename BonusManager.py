@@ -16,8 +16,6 @@ class BonusManager:
         self.game_start_time = datetime.datetime.now()
         self.pause_start_time = None
         self.reverse_start_time = None
-        self.explode_chain = []
-
         self.balls_with_bonuses = []
 
     def start_bonus(self, bonus):
@@ -57,6 +55,26 @@ class BonusManager:
         if self.pause_start_time is not None:
             if (datetime.datetime.now() - self.pause_start_time).seconds == 5:
                 self.stop_pause()
+
+    def handle_bomb_bonus(self, chain):
+        chain_tail = self.ball_generator.balls.index(chain[0]) - 1
+        chain_head = self.ball_generator.balls.index(chain[-1]) + 1
+
+        result_chain = []
+
+        for _ in range(3):
+            if chain_tail < 0:
+                break
+            result_chain.append(self.ball_generator.balls[chain_tail])
+            chain_tail -= 1
+
+        for _ in range(3):
+            if chain_head > len(self.ball_generator.balls) - 1:
+                break
+            result_chain.append(self.ball_generator.balls[chain_head])
+            chain_head += 1
+
+        return result_chain
 
     def update(self):
         self.handle_reverse_bonus()

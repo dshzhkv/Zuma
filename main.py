@@ -90,7 +90,6 @@ class Game:
                     self.continue_game(self.ui_manager.start_level_again_btn,
                                        self.ui_manager.lose_level_display)
 
-
     def continue_game(self, button, window):
         game_continued = False
         while not game_continued and not self.is_quit:

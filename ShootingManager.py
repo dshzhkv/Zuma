@@ -1,5 +1,6 @@
 from Sprites import ShootingBall
 from Params import *
+from BonusManager import Bonus
 import random
 
 
@@ -52,9 +53,11 @@ class ShootingManager:
     def handle_shoot(self, shooting_ball):
         for ball in self.ball_generator.balls:
             if shooting_ball.rect.colliderect(ball.rect):
-                chain = self.ball_generator.collect_chain(ball, shooting_ball.color)
+                chain = self.ball_generator.collect_chain(ball,
+                                                          shooting_ball.color)
                 if len(chain) > 1:
-                    self.check_for_bonus(chain)
+                    chain += self.check_for_bonus(chain)
+                    chain.sort(key=lambda b: b.pos_in_path)
                     self.ball_generator.destroy(chain)
                     if self.charged_ball.color not in \
                             self.ball_generator.get_available_colors():
@@ -68,6 +71,10 @@ class ShootingManager:
     def check_for_bonus(self, chain):
         for ball in chain:
             if ball.bonus is not None:
-                self.bonus_manager.start_bonus(ball.bonus)
+                if ball.bonus is Bonus.Bomb:
+                    return self.bonus_manager.handle_bomb_bonus(chain)
+                else:
+                    self.bonus_manager.start_bonus(ball.bonus)
+        return []
 
 
