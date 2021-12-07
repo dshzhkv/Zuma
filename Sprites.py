@@ -36,7 +36,8 @@ class Ball(pygame.sprite.Sprite):
 
     def move(self, steps):
         self.pos_in_path += steps
-        self.rect.center = self.path.nodes[self.pos_in_path]
+        if self.pos_in_path >= 0:
+            self.rect.center = self.path.nodes[self.pos_in_path]
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, self.rect.center, BALL_RADIUS)

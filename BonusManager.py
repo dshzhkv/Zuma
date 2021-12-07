@@ -27,7 +27,7 @@ class BonusManager:
             self.start_reverse()
 
     def start_reverse(self):
-        self.pause_start_time = datetime.datetime.now()
+        self.reverse_start_time = datetime.datetime.now()
         self.ball_generator.reverse = True
 
     def start_pause(self):
@@ -45,13 +45,13 @@ class BonusManager:
     def handle_reverse_bonus(self):
         if self.reverse_start_time is not None:
             if (datetime.datetime.now() - self.reverse_start_time).seconds < 4:
-                for i in range(len(self.ball_generator.balls)):
-                    if self.ball_generator.balls[i].pos_in_path == 0:
-                        self.reverse_start_time = None
-                    else:
-                        self.ball_generator.balls[i].move(-1)
+                self.move_balls_back()
             else:
                 self.stop_reverse()
+
+    def move_balls_back(self):
+        for i in range(len(self.ball_generator.balls)):
+            self.ball_generator.balls[i].move(-1)
 
     def handle_pause_bonus(self):
         if self.pause_start_time is not None:

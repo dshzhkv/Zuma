@@ -43,12 +43,9 @@ class BallGenerator:
             right_ball = self.balls[i]
             if right_ball.pos_in_path - left_ball.pos_in_path > 20:
                 if left_ball.color == right_ball.color:
-                    self.join_balls(i)
+                    self.join_balls(i - 1)
                 else:
                     self.stop_balls(i)
-    #
-    # def handle_combo(self):
-    #
 
     def update(self):
         self.update_chain()
