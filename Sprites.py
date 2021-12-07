@@ -9,6 +9,7 @@ import datetime
 class Bonus(Enum):
     Pause = 0
     Reverse = 1
+    Bomb = 2
 
 
 BONUS_IMAGES = {Bonus.Pause: {YELLOW: 'images/pause_yellow.png',
@@ -18,7 +19,11 @@ BONUS_IMAGES = {Bonus.Pause: {YELLOW: 'images/pause_yellow.png',
                 Bonus.Reverse: {YELLOW: 'images/reverse_yellow',
                                 GREEN: 'images/reverse_green.png',
                                 BLUE: 'images/reverse_blue.png',
-                                RED: 'images/reverse_red.png'}}
+                                RED: 'images/reverse_red.png'},
+                Bonus.Bomb: {YELLOW: 'images/bomb_yellow.png',
+                             GREEN: 'images/bomb_green.png',
+                             BLUE: 'images/bomb_blue.png',
+                             RED: 'images/bomb_red.png'}}
 
 
 class Ball(pygame.sprite.Sprite):

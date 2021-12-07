@@ -8,7 +8,7 @@ class BallGenerator:
     def __init__(self, path, number):
         self.path = path
         self.colors = [BLUE, RED, GREEN, YELLOW]
-        self.bonuses = [Bonus.Pause, Bonus.Reverse]
+        self.bonuses = [Bonus.Pause, Bonus.Reverse, Bonus.Bomb]
         self.balls = []
         self.number_to_generate = number
         self.number_of_generated = 0
@@ -16,6 +16,7 @@ class BallGenerator:
         self.game_start_time = datetime.datetime.now()
         self.pause_start_time = None
         self.reverse_start_time = None
+        self.explode_chain = []
 
     def generate(self):
         if self.number_of_generated < self.number_to_generate:
@@ -85,6 +86,22 @@ class BallGenerator:
                 self.pause_start_time = datetime.datetime.now()
             elif ball.bonus is Bonus.Reverse:
                 self.reverse_start_time = datetime.datetime.now()
+            elif ball.bonus is Bonus.Bomb:
+                self.collect_balls_to_explode(self.balls.index(ball))
+
+            self.balls.remove(ball)
+
+        self.explode_bomb()
+
+    def collect_balls_to_explode(self, ball_index):
+        for i in range(ball_index - 3, ball_index + 4):
+            if i < 0:
+                continue
+            self.explode_chain.append(self.balls[i])
+
+    # change
+    def explode_bomb(self):
+        for ball in self.explode_chain:
             self.balls.remove(ball)
 
     def join_balls(self, tail_index):

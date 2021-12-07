@@ -14,7 +14,7 @@ class Level:
     def __init__(self, number):
         self.number = number
         self.path = Path(number)
-        self.ball_generator = BallGenerator(self.path, number * 10)
+        self.ball_generator = BallGenerator(self.path, number * 100)
         if number == 2:
             self.player = Player((530, 330))
         else:
