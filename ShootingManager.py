@@ -59,6 +59,9 @@ class ShootingManager:
                     chain += self.check_for_bonus(chain)
                     chain.sort(key=lambda b: b.pos_in_path)
                     self.ball_generator.destroy(chain)
+                    if len(self.ball_generator.balls) == 0:
+                        self.is_win = True
+                        break
                     if self.charged_ball.color not in \
                             self.ball_generator.get_available_colors():
                         self.charged_ball = self.recharge()

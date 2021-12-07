@@ -18,7 +18,8 @@ class BallGenerator:
     def generate(self):
         if self.number_of_generated < self.number_to_generate:
             if len(self.balls) == 0 or \
-                    self.balls[0].rect.center[0] == 2 * BALL_RADIUS:
+                    self.balls[0].pos_in_path >= 2 * BALL_RADIUS // \
+                    self.path.step:
                 self.balls.insert(0, Ball(random.choice(self.colors),
                                           self.path.nodes[0], self.path))
                 self.number_of_generated += 1
