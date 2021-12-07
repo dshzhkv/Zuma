@@ -46,6 +46,9 @@ class BallGenerator:
                     self.join_balls(i)
                 else:
                     self.stop_balls(i)
+    #
+    # def handle_combo(self):
+    #
 
     def update(self):
         self.update_chain()
@@ -77,10 +80,8 @@ class BallGenerator:
 
     def join_balls(self, tail_index):
         for i in range(tail_index, len(self.balls)):
-            color = self.balls[i].color
             center = self.count_center(i - 1)
-            # тут нужно не создавать новый мяч а просто двигат
-            self.balls[i] = Ball(color, center, self.path)
+            self.balls[i].set_center(center)
 
     def stop_balls(self, tail_index):
         for i in range(tail_index, len(self.balls)):
@@ -90,6 +91,29 @@ class BallGenerator:
         return self.path.nodes[self.balls[index].pos_in_path + 2 * BALL_RADIUS
                                // self.path.step]
 
+    def collect_chain(self, ball, color):
+        ball_index = self.balls.index(ball)
+        ball_color = ball.color
 
+        left_half = self.collect_half_chain(ball_index - 1, -1,
+                                            color)
+        right_half = self.collect_half_chain(ball_index + 1, 1,
+                                             color)
 
+        if ball_color == color:
+            chain = left_half + [self.balls[ball_index]] + \
+                    right_half
+            chain.sort(key=lambda ball: ball.pos_in_path)
 
+            return chain
+
+        return right_half
+
+    def collect_half_chain(self, i, delta, color):
+        half_chain = []
+        while len(self.balls) > i >= 0 and \
+                self.balls[i].color == color:
+            half_chain.append(self.balls[i])
+            i += delta
+
+        return half_chain

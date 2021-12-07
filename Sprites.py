@@ -26,6 +26,10 @@ class Ball(pygame.sprite.Sprite):
     def set_bonus(self, bonus):
         self.bonus = bonus
 
+    def set_center(self, center):
+        self.pos_in_path = self.path.nodes.index(center)
+        self.rect = self.image.get_rect(center=center)
+
     def update(self):
         if self.can_move:
             self.move(1)
