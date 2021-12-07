@@ -4,9 +4,11 @@ import random
 
 
 class ShootingManager:
-    def __init__(self, ball_generator, player):
+    def __init__(self, ball_generator, player, bonus_manager):
         self.ball_generator = ball_generator
+        self.bonus_manager = bonus_manager
         self.player = player
+
         self.charged_ball = ShootingBall(random.choice(
             self.ball_generator.colors), player.pos)
 
@@ -36,9 +38,6 @@ class ShootingManager:
     def update(self):
         self.points = 0
         self.charged_ball.update()
-        if self.combo_chain:
-            self.points += 10
-            self.handle_combo(self.combo_chain)
         for ball in self.shooting_balls:
             ball.update()
             self.remove_flown_away(ball)
@@ -51,59 +50,43 @@ class ShootingManager:
             self.shooting_balls.remove(ball)
 
     def handle_shoot(self, shooting_ball):
-        for i in range(len(self.ball_generator.balls)):
-            ball = self.ball_generator.balls[i]
+        for ball in self.ball_generator.balls:
             if shooting_ball.rect.colliderect(ball.rect):
-                chain = self.collect_chain(i, shooting_ball.color)
+                chain = self.collect_chain(ball, shooting_ball)
                 if len(chain) > 1:
-                    self.points += 10
-                    self.handle_combo(chain)
+                    self.check_for_bonus(chain)
+                    self.ball_generator.destroy(chain)
+                    if self.charged_ball.color not in \
+                            self.ball_generator.get_available_colors():
+                        self.charged_ball = self.recharge()
                 else:
-                    self.ball_generator.insert(i, shooting_ball)
+                    ball_index = self.ball_generator.balls.index(ball)
+                    self.ball_generator.insert(ball_index, shooting_ball)
                 self.shooting_balls.remove(shooting_ball)
-                if len(self.ball_generator.balls) == 0:
-                    self.is_win = True
                 break
 
-    def handle_combo(self, chain):
+    def check_for_bonus(self, chain):
+        for ball in chain:
+            if ball.bonus is not None:
+                self.bonus_manager.start_bonus(ball.bonus)
 
-        chain_tail = self.ball_generator.balls.index(chain[0])
-        chain_head = self.ball_generator.balls.index(chain[-1])
+    def collect_chain(self, ball, shooting_ball):
+        ball_index = self.ball_generator.balls.index(ball)
+        ball_color = ball.color
+        shooting_ball_color = shooting_ball.color
 
-        self.ball_generator.destroy(chain)
+        left_half = self.collect_half_chain(ball_index - 1, -1,
+                                            shooting_ball_color)
+        right_half = self.collect_half_chain(ball_index + 1, 1,
+                                             shooting_ball_color)
 
-        if chain_tail == 0 or chain_head == len(self.ball_generator.balls) + \
-                chain_head - chain_tail or \
-                self.ball_generator.balls[chain_tail - 1].color != \
-                self.ball_generator.balls[chain_tail].color:
-            chain = []
-        else:
-            chain = self.collect_chain(chain_tail - 1, self.ball_generator.balls[chain_tail - 1].color)
-
-        if len(chain) > 1:
-            self.ball_generator.join_balls(chain_tail)
-            chain = self.ball_generator.balls[chain_tail - 1:len(chain)]
-            if len(chain) > 2:
-                self.combo_chain = chain
-            else:
-                self.combo_chain = []
-        else:
-            self.combo_chain = []
-            self.ball_generator.stop_balls(chain_tail)
-
-    def collect_chain(self, ball_index, color):
-        left_half = self.collect_half_chain(ball_index - 1, -1, color)
-        right_half = self.collect_half_chain(ball_index + 1, 1, color)
-
-        if self.ball_generator.balls[ball_index].color == color:
+        if ball_color == shooting_ball_color:
             chain = left_half + [self.ball_generator.balls[ball_index]] + \
                     right_half
             chain.sort(key=lambda ball: ball.pos_in_path)
 
             return chain
 
-        if len(left_half) > len(right_half):
-            return left_half
         return right_half
 
     def collect_half_chain(self, i, delta, color):

@@ -4,26 +4,8 @@ import math
 from enum import Enum
 from Params import *
 import datetime
-
-
-class Bonus(Enum):
-    Pause = 0
-    Reverse = 1
-    Bomb = 2
-
-
-BONUS_IMAGES = {Bonus.Pause: {YELLOW: 'images/pause_yellow.png',
-                              GREEN: 'images/pause_green.png',
-                              BLUE: 'images/pause_blue.png',
-                              RED: 'images/pause_red.png'},
-                Bonus.Reverse: {YELLOW: 'images/reverse_yellow',
-                                GREEN: 'images/reverse_green.png',
-                                BLUE: 'images/reverse_blue.png',
-                                RED: 'images/reverse_red.png'},
-                Bonus.Bomb: {YELLOW: 'images/bomb_yellow.png',
-                             GREEN: 'images/bomb_green.png',
-                             BLUE: 'images/bomb_blue.png',
-                             RED: 'images/bomb_red.png'}}
+from BonusManager import Bonus
+from ui import BONUS_IMAGES
 
 
 class Ball(pygame.sprite.Sprite):
@@ -40,19 +22,13 @@ class Ball(pygame.sprite.Sprite):
 
         self.can_move = True
         self.bonus = None
-        self.bonus_time = None
 
-    def set_bonus(self, bonus, time):
+    def set_bonus(self, bonus):
         self.bonus = bonus
-        self.bonus_time = time
 
     def update(self):
         if self.can_move:
             self.move(1)
-        if self.bonus is not None and \
-                (datetime.datetime.now() - self.bonus_time).seconds == 15:
-            self.bonus = None
-            self.bonus_time = None
 
     def move(self, steps):
         self.pos_in_path += steps

@@ -1,4 +1,18 @@
 from Params import *
+from BonusManager import Bonus
+
+BONUS_IMAGES = {Bonus.Pause: {YELLOW: 'images/pause_yellow.png',
+                              GREEN: 'images/pause_green.png',
+                              BLUE: 'images/pause_blue.png',
+                              RED: 'images/pause_red.png'},
+                Bonus.Reverse: {YELLOW: 'images/reverse_yellow',
+                                GREEN: 'images/reverse_green.png',
+                                BLUE: 'images/reverse_blue.png',
+                                RED: 'images/reverse_red.png'},
+                Bonus.Bomb: {YELLOW: 'images/bomb_yellow.png',
+                             GREEN: 'images/bomb_green.png',
+                             BLUE: 'images/bomb_blue.png',
+                             RED: 'images/bomb_red.png'}}
 
 
 class Button:

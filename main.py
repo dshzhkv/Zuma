@@ -7,6 +7,7 @@ from Path import Path
 from Sprites import *
 from BallGenerator import BallGenerator
 from ShootingManager import ShootingManager
+from BonusManager import BonusManager
 from ui import *
 
 
@@ -15,12 +16,13 @@ class Level:
         self.number = number
         self.path = Path(number)
         self.ball_generator = BallGenerator(self.path, number * 100)
+        self.bonus_manager = BonusManager(self.ball_generator)
         if number == 2:
             self.player = Player((530, 330))
         else:
             self.player = Player()
         self.finish = Finish(self.path, self.ball_generator.balls)
-        self.shooting_manager = ShootingManager(self.ball_generator, self.player)
+        self.shooting_manager = ShootingManager(self.ball_generator, self.player, self.bonus_manager)
 
 class Game:
     def __init__(self):
@@ -124,6 +126,7 @@ class Game:
         if self.points != 0 and self.points % 500 == 0:
             self.lives += 1
         self.level.ball_generator.update()
+        self.level.bonus_manager.update()
         self.level.finish.update()
 
     def update_display(self, display):
