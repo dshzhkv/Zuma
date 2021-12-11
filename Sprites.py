@@ -9,16 +9,18 @@ from ui import BONUS_IMAGES
 
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, color, center, path):
+    def __init__(self, color, pos, path):
         pygame.sprite.Sprite.__init__(self)
 
         self.color = color
 
         self.path = path
-        self.pos_in_path = self.path.nodes.index(center)
+        self.pos_in_path = self.path.positions.index(pos)
 
         self.image = pygame.Surface(BALL_SIZE)
-        self.rect = self.image.get_rect(center=center)
+        self.pos = pygame.math.Vector2(self.path.positions[self.pos_in_path])
+        self.rect = self.image.get_rect(center=(round(self.pos.x),
+                                                round(self.pos.y)))
 
         self.can_move = True
         self.bonus = None
@@ -26,9 +28,10 @@ class Ball(pygame.sprite.Sprite):
     def set_bonus(self, bonus):
         self.bonus = bonus
 
-    def set_center(self, center):
-        self.pos_in_path = self.path.nodes.index(center)
-        self.rect = self.image.get_rect(center=center)
+    def set_position(self, pos):
+        self.pos = pos
+        self.pos_in_path = self.path.positions.index(pos)
+        self.rect.center = (round(self.pos.x), round(self.pos.y))
 
     def update(self):
         if self.can_move:
@@ -37,7 +40,9 @@ class Ball(pygame.sprite.Sprite):
     def move(self, steps):
         self.pos_in_path += steps
         if self.pos_in_path >= 0:
-            self.rect.center = self.path.nodes[self.pos_in_path]
+            self.pos = pygame.math.Vector2(
+                self.path.positions[self.pos_in_path])
+            self.rect.center = (round(self.pos.x), round(self.pos.y))
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, self.rect.center, BALL_RADIUS)
@@ -69,7 +74,6 @@ class ShootingBall(pygame.sprite.Sprite):
                        target[1] - self.rect.center[1])
         length = math.hypot(*self.target)
         self.target = (self.target[0] / length, self.target[1] / length)
-        # self.angle = math.degrees(math.atan2(-self.target[1], self.target[0]))
 
     def update(self):
         self.rect.center = (self.rect.center[0] + self.target[0] * self.speed,
@@ -118,7 +122,7 @@ class Finish(pygame.sprite.Sprite):
         self.image = pygame.transform.smoothscale(
             pygame.image.load("images/star.png"), (80, 80))
         self.image.set_colorkey(BLACK)
-        self.rect = self.image.get_rect(center=path.nodes[-1])
+        self.rect = self.image.get_rect(center=path.positions[-1])
 
     def update(self):
         for ball in self.balls:
@@ -127,5 +131,4 @@ class Finish(pygame.sprite.Sprite):
                 break
 
     def draw(self, screen):
-
         screen.blit(self.image, (self.rect.x, self.rect.y))

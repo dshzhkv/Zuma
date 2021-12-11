@@ -149,7 +149,7 @@ def are_lists_equal(expected, actual):
 #     def test_join_two_balls(self):
 #         ball_generator = self.setup_ball_generator(2)
 #         ball_generator.join_balls(1)
-#         assert ball_generator.balls[1].rect.center == (40, 80)
+#         assert ball_generator.balls[1].rect.pos == (40, 80)
 #
 #     def test_join_many_balls(self):
 #         ball_generator = self.setup_ball_generator(20)

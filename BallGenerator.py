@@ -21,7 +21,7 @@ class BallGenerator:
                     self.balls[0].pos_in_path >= 2 * BALL_RADIUS // \
                     self.path.step:
                 self.balls.insert(0, Ball(random.choice(self.colors),
-                                          self.path.nodes[0], self.path))
+                                          self.path.positions[0], self.path))
                 self.number_of_generated += 1
 
     def move_stopped_ball(self, i):
@@ -61,57 +61,32 @@ class BallGenerator:
         return [ball.color for ball in self.balls]
 
     def insert(self, index, shooting_ball):
-        if index == len(self.balls) - 1:
-            center = self.count_center(index)
-            ball = Ball(shooting_ball.color, center, self.path)
-        else:
-            ball = Ball(shooting_ball.color, self.balls[index + 1].rect.center,
-                        self.path)
-        ball.can_move = self.balls[index].can_move
-        for i in range(index + 1, len(self.balls)):
-            self.balls[i].move(2 * BALL_RADIUS // self.path.step)
+        ball = self.convert_shooting_ball(index, shooting_ball)
         self.balls.insert(index + 1, ball)
+        for i in range(index + 2, len(self.balls)):
+            if self.balls[i].pos_in_path - self.balls[i - 1].pos_in_path >= \
+                    2 * BALL_RADIUS // self.path.step:
+                break
+            self.balls[i].set_position(self.count_next_pos(i - 1))
+
+    def convert_shooting_ball(self, index, shooting_ball):
+        ball = Ball(shooting_ball.color,
+                    self.count_next_pos(index), self.path)
+        ball.can_move = self.balls[index].can_move
+        return ball
 
     def destroy(self, chain):
         for ball in chain:
             self.balls.remove(ball)
 
-    def join_balls(self, tail_index):
-        for i in range(tail_index, len(self.balls)):
-            center = self.count_center(i - 1)
-            self.balls[i].set_center(center)
+    def join_balls(self, index):
+        for i in range(index, len(self.balls)):
+            self.balls[i].set_position(self.count_next_pos(i - 1))
 
     def stop_balls(self, tail_index):
         for i in range(tail_index, len(self.balls)):
             self.balls[i].can_move = False
 
-    def count_center(self, index):
-        return self.path.nodes[self.balls[index].pos_in_path + 2 * BALL_RADIUS
-                               // self.path.step]
-
-    def collect_chain(self, ball, color):
-        ball_index = self.balls.index(ball)
-        ball_color = ball.color
-
-        left_half = self.collect_half_chain(ball_index - 1, -1,
-                                            color)
-        right_half = self.collect_half_chain(ball_index + 1, 1,
-                                             color)
-
-        if ball_color == color:
-            chain = left_half + [self.balls[ball_index]] + \
-                    right_half
-            chain.sort(key=lambda ball: ball.pos_in_path)
-
-            return chain
-
-        return right_half
-
-    def collect_half_chain(self, i, delta, color):
-        half_chain = []
-        while len(self.balls) > i >= 0 and \
-                self.balls[i].color == color:
-            half_chain.append(self.balls[i])
-            i += delta
-
-        return half_chain
+    def count_next_pos(self, index):
+        return self.path.positions[self.balls[index].pos_in_path +
+                                   2 * BALL_RADIUS // self.path.step]

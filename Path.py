@@ -6,85 +6,76 @@ from Params import *
 
 class Path:
     def __init__(self, level):
+        self.positions = []
+        self.targets = []
         self.step = 2
-        self.nodes = []
         self.set_path(level)
 
     def set_path(self, level):
         if level == 1:
-            self.set_square_path()
+            self.set_triangle_path()
         elif level == 2:
             self.set_spiral_path()
         elif level == 3:
-            self.set_triangle_path()
+            self.set_square_path()
 
     def set_square_path(self):
-        self.nodes += [(i, 80) for i in
-                       range(0, WIDTH - 79, self.step)]  # right
-        self.nodes += [(WIDTH - 80, i) for i in
-                       range(80, HEIGHT - 79, self.step)]  # down
-        self.nodes += [(i, HEIGHT - 80) for i in
-                       range(WIDTH - 80, 79, -self.step)]  # left
-        self.nodes += [(80, i) for i in
-                       range(HEIGHT - 80, 139, -self.step)]  # up
-        self.nodes += [(i, 140) for i in range(80, WIDTH - 159, self.step)]
-        self.nodes += [(WIDTH - 160, i) for i in
-                       range(140, HEIGHT - 159, self.step)]
-        self.nodes += [(i, HEIGHT - 160) for i in
-                       range(WIDTH - 160, 159, -self.step)]
-        self.nodes += [(160, i) for i in range(HEIGHT - 160, 339, -self.step)]
+        self.targets = [(0, 80), (WIDTH - 80, 80), (WIDTH - 80, HEIGHT - 80),
+                   (80, HEIGHT - 80), (80, 140), (WIDTH - 160, 140),
+                   (WIDTH - 160, HEIGHT - 160), (160, HEIGHT - 160),
+                   (160, 340)]
+        self.set_positions()
 
     def set_triangle_path(self):
-        self.nodes += [(80, y) for y in range(0, HEIGHT - 81)]
-        self.nodes += [(x, HEIGHT - 80) for x in range(80, WIDTH - 80)]
-
-        line = [(x, 1.5 * x - HEIGHT + 160) for x in range(WIDTH - 80, 399,
-                                                           -1)]
-        self.nodes += line
-        line.reverse()
-        self.nodes += list(zip([x for x in range(400, 159, -1)],
-                               [pos[1] for pos in line]))
-        last_y = self.nodes[-1][1]
-        self.nodes += [(x, last_y) for x in range(160, WIDTH - 241)]
+        self.targets = [(80, 0), (80, HEIGHT - 80), (WIDTH - 80, HEIGHT - 80),
+                        (400, 80), (160, 460), (WIDTH - 280, 460)]
+        self.set_positions()
 
     def set_spiral_path(self):
-        radius = 18
-        angle = 0.0
+        self.targets = [(64, 0), (64, 416), (99, 492), (153, 559), (222, 607),
+                        (301, 637), (382, 645), (461, 631), (536, 597),
+                        (598, 546), (644, 481), (671, 406), (679, 330),
+                        (665, 254), (634, 186), (586, 128), (524, 84),
+                        (454, 58), (383, 51), (312, 64), (246, 94), (193, 140),
+                        (151, 198), (127, 262), (121, 331), (133, 396),
+                        (162, 458), (204, 508), (259, 546), (319, 567),
+                        (383, 573), (444, 561), (500, 535), (547, 495),
+                        (583, 444), (602, 389), (607, 330), (596, 273),
+                        (571, 220), (534, 178), (488, 146), (435, 128),
+                        (382, 123), (330, 133), (282, 156), (242, 190),
+                        (214, 233), (197, 281), (193, 330), (203, 377),
+                        (224, 421), (255, 457), (303, 470), (345, 469),
+                        (383, 456), (409, 434), (427, 407), (432, 380),
+                        (428, 356), (417, 340), (339, 330)]
+        self.set_positions()
 
-        x = int(radius * math.cos(angle))
-        y = int(radius * math.sin(angle))
-        nodes = [(x, y)]
+    def set_positions(self):
+        pos = pygame.math.Vector2(self.targets[0])
+        direction = pygame.math.Vector2((0, 0))
 
-        radius_step = radius
-        angle_step = math.pi / 12
+        target_index = 0
 
-        for _ in range(9):
-            angle += angle_step
-            radius += radius_step
-            x = int(radius * math.cos(angle))
-            y = int(radius * math.sin(angle))
-            nodes += [(x, y)]
+        while target_index < len(self.targets):
+            pos = pos + (direction * self.step)
+            self.positions.append(pos)
 
-        radius_step = 3
-        for _ in range(50):
-            angle += angle_step
-            radius += radius_step
-            x = int(radius * math.cos(angle))
-            y = int(radius * math.sin(angle))
-            nodes += [(x, y)]
+            if (round(pos.x), round(pos.y)) == self.targets[target_index]:
+                target_index += 1
+                if target_index == len(self.targets):
+                    break
+                direction = self.change_direction(target_index, pos)
 
-        self.nodes += [(nodes[0][0] + WIDTH // 2 - 18, nodes[0][1] + HEIGHT // 2)]
-        for i in range(0, len(nodes) - 1):
-            start = (nodes[i][0] + WIDTH // 2 - 18, nodes[i][1] + HEIGHT // 2)
-            end = (nodes[i + 1][0] + WIDTH // 2 - 18, nodes[i + 1][1] + HEIGHT // 2)
-
-            self.nodes += [((start[0] + end[0]) / 2, (start[1] + end[1]) / 2), end]
-
-        last_pos = self.nodes[-1]
-        self.nodes += [(last_pos[0], y) for y in range(last_pos[1], -1, -self.step)]
-        self.nodes.reverse()
+    def change_direction(self, target_index, pos):
+        direction = pygame.math.Vector2(
+            (self.targets[target_index][0] - pos[0],
+             self.targets[target_index][1] - pos[1]))
+        length = math.hypot(*direction)
+        direction = pygame.math.Vector2(
+            (direction[0] / length,
+             direction[1] / length))
+        return direction
 
     def draw(self, screen):
-        for i in range(len(self.nodes) - 1):
-            pygame.draw.line(screen, DARK_TAUPE, self.nodes[i],
-                             self.nodes[i + 1], 10)
+        for i in range(len(self.targets) - 1):
+            pygame.draw.line(screen, DARK_TAUPE, self.targets[i],
+                             self.targets[i + 1], 10)

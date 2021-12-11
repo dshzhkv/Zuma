@@ -53,8 +53,7 @@ class ShootingManager:
     def handle_shoot(self, shooting_ball):
         for ball in self.ball_generator.balls:
             if shooting_ball.rect.colliderect(ball.rect):
-                chain = self.ball_generator.collect_chain(ball,
-                                                          shooting_ball.color)
+                chain = self.collect_chain(ball, shooting_ball.color)
                 if len(chain) > 1:
                     chain += self.check_for_bonus(chain)
                     chain.sort(key=lambda b: b.pos_in_path)
@@ -80,4 +79,30 @@ class ShootingManager:
                     self.bonus_manager.start_bonus(ball.bonus)
         return []
 
+    def collect_chain(self, ball, color):
+        ball_index = self.ball_generator.balls.index(ball)
+        ball_color = ball.color
+
+        left_half = self.collect_half_chain(ball_index - 1, -1,
+                                            color)
+        right_half = self.collect_half_chain(ball_index + 1, 1,
+                                             color)
+
+        if ball_color == color:
+            chain = left_half + [self.ball_generator.balls[ball_index]] + \
+                    right_half
+            chain.sort(key=lambda ball: ball.pos_in_path)
+
+            return chain
+
+        return right_half
+
+    def collect_half_chain(self, i, delta, color):
+        half_chain = []
+        while len(self.ball_generator.balls) > i >= 0 and \
+                self.ball_generator.balls[i].color == color:
+            half_chain.append(self.ball_generator.balls[i])
+            i += delta
+
+        return half_chain
 
