@@ -7,15 +7,17 @@ class Bonus(Enum):
     Pause = 0
     Reverse = 1
     Bomb = 2
+    Speed = 3
 
 
 class BonusManager:
     def __init__(self, ball_generator):
         self.ball_generator = ball_generator
-        self.bonuses = [Bonus.Pause, Bonus.Reverse, Bonus.Bomb]
+        self.bonuses = [Bonus.Pause, Bonus.Reverse, Bonus.Bomb, Bonus.Speed]
         self.game_start_time = datetime.datetime.now()
         self.pause_start_time = None
         self.reverse_start_time = None
+        self.speed_start_time = None
         self.balls_with_bonuses = []
 
     def start_bonus(self, bonus):
@@ -23,6 +25,11 @@ class BonusManager:
             self.start_pause()
         elif bonus is Bonus.Reverse:
             self.start_reverse()
+        elif bonus is Bonus.Speed:
+            self.start_speed()
+
+    def start_speed(self):
+        self.speed_start_time = datetime.datetime.now()
 
     def start_reverse(self):
         self.reverse_start_time = datetime.datetime.now()
@@ -40,6 +47,9 @@ class BonusManager:
         self.pause_start_time = None
         self.ball_generator.pause = False
 
+    def stop_speed(self):
+        self.speed_start_time = None
+
     def handle_reverse_bonus(self):
         if self.reverse_start_time is not None:
             if (datetime.datetime.now() - self.reverse_start_time).seconds < 4:
@@ -55,6 +65,13 @@ class BonusManager:
         if self.pause_start_time is not None:
             if (datetime.datetime.now() - self.pause_start_time).seconds == 5:
                 self.stop_pause()
+
+    def handle_speed_bonus(self):
+        if self.speed_start_time is None or (datetime.datetime.now() -
+                                             self.speed_start_time).seconds == 5:
+            self.stop_speed()
+            return False
+        return True
 
     def handle_bomb_bonus(self, chain):
         chain_tail = self.ball_generator.balls.index(chain[0]) - 1

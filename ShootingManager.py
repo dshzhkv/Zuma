@@ -2,6 +2,7 @@ from Sprites import ShootingBall
 from Params import *
 from BonusManager import Bonus
 import random
+import datetime
 
 
 class ShootingManager:
@@ -18,13 +19,17 @@ class ShootingManager:
 
         self.combo_chain = []
 
-        self.points = 0
+        self.speed = False
 
     def shoot(self, target):
-        shooting_ball = self.charged_ball
-        shooting_ball.set_target(target)
-        self.charged_ball = self.recharge()
-        self.shooting_balls.append(shooting_ball)
+        if len(self.shooting_balls) == 0 or self.speed or \
+                (datetime.datetime.now() -
+                 self.shooting_balls[-1].time).microseconds > 300000:
+            shooting_ball = self.charged_ball
+            shooting_ball.set_target(target)
+            shooting_ball.set_time(datetime.datetime.now())
+            self.charged_ball = self.recharge()
+            self.shooting_balls.append(shooting_ball)
 
     def recharge(self):
         return ShootingBall(random.choice(
@@ -36,7 +41,7 @@ class ShootingManager:
             ball.draw(screen)
 
     def update(self):
-        self.points = 0
+        self.speed = self.bonus_manager.handle_speed_bonus()
         self.charged_ball.update()
         for ball in self.shooting_balls:
             ball.update()
@@ -71,6 +76,9 @@ class ShootingManager:
             if ball.bonus is not None:
                 if ball.bonus is Bonus.Bomb:
                     return self.bonus_manager.handle_bomb_bonus(chain)
+                elif ball.bonus is Bonus.Speed:
+                    self.speed = True
+                    self.bonus_manager.start_bonus(ball.bonus)
                 else:
                     self.bonus_manager.start_bonus(ball.bonus)
         return []

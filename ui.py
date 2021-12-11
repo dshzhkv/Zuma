@@ -12,7 +12,11 @@ BONUS_IMAGES = {Bonus.Pause: {YELLOW: 'images/pause_yellow.png',
                 Bonus.Bomb: {YELLOW: 'images/bomb_yellow.png',
                              GREEN: 'images/bomb_green.png',
                              BLUE: 'images/bomb_blue.png',
-                             RED: 'images/bomb_red.png'}}
+                             RED: 'images/bomb_red.png'},
+                Bonus.Speed: {YELLOW: 'images/speed_yellow.png',
+                              GREEN: 'images/speed_green.png',
+                              BLUE: 'images/speed_blue.png',
+                              RED: 'images/speed_red.png'}}
 
 
 class Button:

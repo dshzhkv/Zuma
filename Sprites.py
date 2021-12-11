@@ -69,6 +69,11 @@ class ShootingBall(pygame.sprite.Sprite):
         self.target = (0, 0)
         self.speed = 15
 
+        self.time = None
+
+    def set_time(self, time):
+        self.time = time
+
     def set_target(self, target):
         self.target = (target[0] - self.rect.center[0],
                        target[1] - self.rect.center[1])
