@@ -120,7 +120,7 @@ class UiManager:
         for sprite in window.spites:
             sprite.draw(self.screen)
 
-    def show_points(self, points):
+    def show_score(self, points):
         points_label = Label('Очки: {}'.format(points), (WIDTH // 4, 40))
         self.put_label(points_label)
 

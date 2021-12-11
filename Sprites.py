@@ -84,10 +84,13 @@ class ShootingBall(pygame.sprite.Sprite):
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos=SCREEN_CENTER):
+    def __init__(self, level):
         pygame.sprite.Sprite.__init__(self)
 
-        self.pos = pos
+        if level == 2:
+            self.pos = (530, 330)
+        else:
+            self.pos = SCREEN_CENTER
 
         self.original_image = pygame.transform.smoothscale(
             pygame.image.load("images/player.png"), PLAYER_SIZE)
@@ -95,7 +98,7 @@ class Player(pygame.sprite.Sprite):
 
         self.image = self.original_image
 
-        self.rect = self.image.get_rect(center=pos)
+        self.rect = self.image.get_rect(center=self.pos)
 
         self.angle = 0
 
@@ -112,12 +115,11 @@ class Player(pygame.sprite.Sprite):
 
 
 class Finish(pygame.sprite.Sprite):
-    def __init__(self, path, balls):
+    def __init__(self, path, balls, score_manager):
         pygame.sprite.Sprite.__init__(self)
 
         self.balls = balls
-
-        self.is_finished = False
+        self.score_manager = score_manager
 
         self.image = pygame.transform.smoothscale(
             pygame.image.load("images/star.png"), (80, 80))
@@ -127,8 +129,7 @@ class Finish(pygame.sprite.Sprite):
     def update(self):
         for ball in self.balls:
             if self.rect.colliderect(ball.rect):
-                self.is_finished = True
-                break
+                self.score_manager.lose()
 
     def draw(self, screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))

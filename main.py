@@ -8,6 +8,7 @@ from Sprites import *
 from BallGenerator import BallGenerator
 from ShootingManager import ShootingManager
 from BonusManager import BonusManager
+from ScoreManager import ScoreManager
 from ui import *
 
 
@@ -15,14 +16,12 @@ class Level:
     def __init__(self, number):
         self.number = number
         self.path = Path(number)
-        self.ball_generator = BallGenerator(self.path, number * 100)
+        self.score_manager = ScoreManager()
+        self.ball_generator = BallGenerator(self.path, number * 100, self.score_manager)
         self.bonus_manager = BonusManager(self.ball_generator)
-        if number == 2:
-            self.player = Player((530, 330))
-        else:
-            self.player = Player()
-        self.finish = Finish(self.path, self.ball_generator.balls)
-        self.shooting_manager = ShootingManager(self.ball_generator, self.player, self.bonus_manager)
+        self.player = Player(number)
+        self.finish = Finish(self.path, self.ball_generator.balls, self.score_manager)
+        self.shooting_manager = ShootingManager(self.ball_generator, self.player, self.bonus_manager, self.score_manager)
 
 class Game:
     def __init__(self):
@@ -35,8 +34,6 @@ class Game:
         self.level_num = 1
         self.setup_new_game()
         self.is_quit = False
-        self.points = 0
-        self.lives = 2
 
     def play(self):
         self.continue_game(self.ui_manager.start_game_btn,
@@ -68,8 +65,7 @@ class Game:
             self.update_sprites()
             self.update_display(self.ui_manager.game_display)
 
-
-            if self.level.shooting_manager.is_win:
+            if self.level.score_manager.is_win:
                 game_finished = True
                 if self.level_num == 3:
                     self.win_game()
@@ -77,15 +73,14 @@ class Game:
                     self.continue_game(self.ui_manager.continue_btn,
                                        self.ui_manager.win_level_display)
                     self.level_num += 1
-            elif self.level.finish.is_finished:
+            elif self.level.score_manager.is_lose:
                 game_finished = True
-                self.lives -= 1
-                if self.lives == 0:
+                self.level.score_manager.lives -= 1
+                if self.level.score_manager.lives == 0:
                     self.continue_game(self.ui_manager.new_game_button,
                                        self.ui_manager.lose_game_display)
                     self.level_num = 1
-                    self.lives = 2
-                    self.points = 0
+                    self.level.score_manager.lives = 2
                 else:
                     self.continue_game(self.ui_manager.start_level_again_btn,
                                        self.ui_manager.lose_level_display)
@@ -121,9 +116,6 @@ class Game:
     def update_sprites(self):
         self.level.player.update()
         self.level.shooting_manager.update()
-        self.points += self.level.shooting_manager.points
-        if self.points != 0 and self.points % 500 == 0:
-            self.lives += 1
         self.level.ball_generator.update()
         self.level.bonus_manager.update()
         self.level.finish.update()
@@ -131,8 +123,8 @@ class Game:
     def update_display(self, display):
         self.ui_manager.draw_window(display)
         if display is self.ui_manager.game_display:
-            self.ui_manager.show_points(self.points)
-            self.ui_manager.show_lives(self.lives)
+            self.ui_manager.show_score(self.level.score_manager.score)
+            self.ui_manager.show_lives(self.level.score_manager.lives)
         pygame.display.update()
 
 

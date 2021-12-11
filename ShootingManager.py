@@ -5,15 +5,14 @@ import random
 
 
 class ShootingManager:
-    def __init__(self, ball_generator, player, bonus_manager):
+    def __init__(self, ball_generator, player, bonus_manager, score_manager):
         self.ball_generator = ball_generator
         self.bonus_manager = bonus_manager
+        self.score_manager = score_manager
         self.player = player
 
         self.charged_ball = ShootingBall(random.choice(
             self.ball_generator.colors), player.pos)
-
-        self.is_win = False
 
         self.shooting_balls = []
 
@@ -56,11 +55,8 @@ class ShootingManager:
                 chain = self.collect_chain(ball, shooting_ball.color)
                 if len(chain) > 1:
                     chain += self.check_for_bonus(chain)
-                    chain.sort(key=lambda b: b.pos_in_path)
+                    self.score_manager.add_score(10 * len(chain))
                     self.ball_generator.destroy(chain)
-                    if len(self.ball_generator.balls) == 0:
-                        self.is_win = True
-                        break
                     if self.charged_ball.color not in \
                             self.ball_generator.get_available_colors():
                         self.charged_ball = self.recharge()
