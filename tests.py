@@ -1,6 +1,7 @@
 from unittest import TestCase
-from game.BallGenerator import BallGenerator
+
 from game.Path import Path
+from game.BallGenerator import BallGenerator
 from game.Sprites import *
 from game.ScoreManager import ScoreManager
 
