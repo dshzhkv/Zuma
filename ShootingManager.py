@@ -63,7 +63,8 @@ class ShootingManager:
                     self.score_manager.add_score(10 * len(chain))
                     self.ball_generator.destroy(chain)
                     if self.charged_ball.color not in \
-                            self.ball_generator.get_available_colors():
+                            self.ball_generator.get_available_colors() and \
+                            len(self.ball_generator.balls) != 0:
                         self.charged_ball = self.recharge()
                 else:
                     ball_index = self.ball_generator.balls.index(ball)
