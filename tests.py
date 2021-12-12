@@ -322,23 +322,23 @@ class TestInsert(TestCase):
 #         assert are_lists_equal([], ball_generator.balls) is True
 
 
-class TestBomb(TestCase):
-    def test_bomb(self):
-        path = Path(1)
-        ball_generator = BallGenerator(path, 10)
-        ball_generator.balls = [Ball(YELLOW, path.nodes[i], path) for i in range(1, 5)] + \
-                               [Ball(BLUE, path.nodes[i], path) for i in range(5, 7)] + \
-                               [Ball(RED, path.nodes[i], path) for i in range(7, 11)]
-        ball_generator.balls[4].set_bonus(Bonus.Bomb)
-        player = Player()
-        bonus_manager = BonusManager(ball_generator)
-        shooting_manager = ShootingManager(ball_generator, player, bonus_manager)
-        shooting_ball = ShootingBall(BLUE, (ball_generator.balls[4].rect.center[0], ball_generator.balls[4].rect.center[1] - 39))
-        shooting_manager.shooting_balls = [shooting_ball]
-        shooting_manager.handle_shoot(shooting_ball)
-        expected = [Ball(YELLOW, path.nodes[1], path), Ball(RED, path.nodes[10], path)]
-        assert are_lists_equal(expected, ball_generator.balls)
-
-
+# class TestBomb(TestCase):
+#     def test_bomb(self):
+#         path = Path(1)
+#         ball_generator = BallGenerator(path, 10)
+#         ball_generator.balls = [Ball(YELLOW, path.nodes[i], path) for i in range(1, 5)] + \
+#                                [Ball(BLUE, path.nodes[i], path) for i in range(5, 7)] + \
+#                                [Ball(RED, path.nodes[i], path) for i in range(7, 11)]
+#         ball_generator.balls[4].set_bonus(Bonus.Bomb)
+#         player = Player()
+#         bonus_manager = BonusManager(ball_generator)
+#         shooting_manager = ShootingManager(ball_generator, player, bonus_manager)
+#         shooting_ball = ShootingBall(BLUE, (ball_generator.balls[4].rect.center[0], ball_generator.balls[4].rect.center[1] - 39))
+#         shooting_manager.shooting_balls = [shooting_ball]
+#         shooting_manager.handle_shoot(shooting_ball)
+#         expected = [Ball(YELLOW, path.nodes[1], path), Ball(RED, path.nodes[10], path)]
+#         assert are_lists_equal(expected, ball_generator.balls)
+#
+#
 
 
