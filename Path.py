@@ -13,11 +13,11 @@ class Path:
 
     def set_path(self, level):
         if level == 1:
-            self.set_triangle_path()
-        elif level == 2:
             self.set_spiral_path()
-        elif level == 3:
+        elif level == 2:
             self.set_square_path()
+        elif level == 3:
+            self.set_triangle_path()
 
     def set_square_path(self):
         self.targets = [(0, 80), (WIDTH - 80, 80), (WIDTH - 80, HEIGHT - 80),

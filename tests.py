@@ -4,6 +4,7 @@ from Path import Path
 from Sprites import *
 from ShootingManager import ShootingManager
 from BonusManager import Bonus, BonusManager
+from ScoreManager import ScoreManager
 
 
 def are_lists_equal(expected, actual):
@@ -16,45 +17,89 @@ def are_lists_equal(expected, actual):
 
     return True
 
-#
-# class TestInsert(TestCase):
-#     path = Path()
-#
-#     def test_insert_ball_in_middle(self):
-#         shooting_ball = ShootingBall(RED)
-#         balls_actual = self.setup_ball_generator(1, shooting_ball).balls
-#         balls_expected = self.setup_expected_balls([YELLOW, GREEN,
-#                                                     shooting_ball.color, BLUE])
-#         assert are_lists_equal(balls_expected, balls_actual) is True
-#
-#     def test_insert_ball_in_head(self):
-#         shooting_ball = ShootingBall(RED)
-#         balls_actual = self.setup_ball_generator(2, shooting_ball).balls
-#         balls_expected = self.setup_expected_balls([YELLOW, GREEN, BLUE,
-#                                                     shooting_ball.color])
-#         assert are_lists_equal(balls_expected, balls_actual) is True
-#
-#     def test_insert_ball_in_tail(self):
-#         shooting_ball = ShootingBall(RED)
-#         balls_actual = self.setup_ball_generator(0, shooting_ball).balls
-#         balls_expected = self.setup_expected_balls([YELLOW,
-#                                                     shooting_ball.color, GREEN,
-#                                                     BLUE])
-#         assert are_lists_equal(balls_expected, balls_actual) is True
-#
-#     def setup_ball_generator(self, insert_index, shooting_ball):
-#         ball_generator = BallGenerator(self.path, 3)
-#         ball_generator.balls = [Ball(YELLOW, (40, 80), self.path),
-#                                 Ball(GREEN, (80, 80), self.path),
-#                                 Ball(BLUE, (120, 80), self.path)]
-#         ball_generator.insert(insert_index, shooting_ball)
-#         return ball_generator
-#
-#     def setup_expected_balls(self, colors):
-#         centers = [(i, 80) for i in range(40, 40 * len(colors) + 1, 40)]
-#         return [Ball(colors[i], centers[i], self.path) for i in
-#                 range(len(colors))]
-#
+
+def setup_ball_generator(path, colors):
+    ball_generator = BallGenerator(path, len(colors), ScoreManager())
+    ball_generator.balls = setup_balls(path, colors)
+    return ball_generator
+
+
+def setup_balls(path, colors):
+    positions = setup_positions(path, len(colors))
+    return [Ball(colors[i], positions[i], path) for i in range(len(colors))]
+
+
+def setup_positions(path, length):
+    step = 2 * BALL_RADIUS // path.step
+    return [i for i in range(0, length * step + 1, step)]
+
+
+class TestInsert(TestCase):
+    def test_insert_ball_in_middle_path1(self):
+        balls_expected, balls_actual = \
+            self.setup_test(RED, 1, [YELLOW, GREEN, BLUE], 1, [YELLOW, GREEN,
+                                                               RED, BLUE])
+        assert are_lists_equal(balls_expected, balls_actual) is True
+
+    def test_insert_ball_in_head_path1(self):
+        balls_expected, balls_actual = \
+            self.setup_test(RED, 1, [YELLOW, GREEN, BLUE], 2, [YELLOW, GREEN,
+                                                               BLUE, RED])
+        assert are_lists_equal(balls_expected, balls_actual) is True
+
+    def test_insert_ball_in_tail_path1(self):
+        balls_expected, balls_actual = \
+            self.setup_test(RED, 1, [YELLOW, GREEN, BLUE], 0, [YELLOW, RED,
+                                                               GREEN, BLUE])
+        assert are_lists_equal(balls_expected, balls_actual) is True
+
+    def test_insert_ball_in_middle_path2(self):
+        balls_expected, balls_actual = \
+            self.setup_test(RED, 2, [YELLOW, GREEN, BLUE], 1, [YELLOW, GREEN,
+                                                               RED, BLUE])
+        assert are_lists_equal(balls_expected, balls_actual) is True
+
+    def test_insert_ball_in_head_path2(self):
+        balls_expected, balls_actual = \
+            self.setup_test(RED, 2, [YELLOW, GREEN, BLUE], 2, [YELLOW, GREEN,
+                                                               BLUE, RED])
+        assert are_lists_equal(balls_expected, balls_actual) is True
+
+    def test_insert_ball_in_tail_path2(self):
+        balls_expected, balls_actual = \
+            self.setup_test(RED, 2, [YELLOW, GREEN, BLUE], 0, [YELLOW, RED,
+                                                               GREEN, BLUE])
+        assert are_lists_equal(balls_expected, balls_actual) is True
+
+    def test_insert_ball_in_middle_path3(self):
+        balls_expected, balls_actual = \
+            self.setup_test(RED, 3, [YELLOW, GREEN, BLUE], 1, [YELLOW, GREEN,
+                                                               RED, BLUE])
+        assert are_lists_equal(balls_expected, balls_actual) is True
+
+    def test_insert_ball_in_head_path3(self):
+        balls_expected, balls_actual = \
+            self.setup_test(RED, 3, [YELLOW, GREEN, BLUE], 2, [YELLOW, GREEN,
+                                                               BLUE, RED])
+        assert are_lists_equal(balls_expected, balls_actual) is True
+
+    def test_insert_ball_in_tail_path3(self):
+        balls_expected, balls_actual = \
+            self.setup_test(RED, 3, [YELLOW, GREEN, BLUE], 0, [YELLOW, RED,
+                                                               GREEN, BLUE])
+        assert are_lists_equal(balls_expected, balls_actual) is True
+
+    @staticmethod
+    def setup_test(shooting_ball_color, path_num, balls_colors,
+                   insert_index, expected_colors):
+        shooting_ball = ShootingBall(shooting_ball_color)
+        path = Path(path_num)
+        ball_generator = setup_ball_generator(path, balls_colors)
+        ball_generator.insert(insert_index, shooting_ball)
+        balls_expected = setup_balls(path, expected_colors)
+        return balls_expected, ball_generator.balls
+
+
 #
 # class TestCollectChain(TestCase):
 #

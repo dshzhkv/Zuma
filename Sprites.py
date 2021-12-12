@@ -9,16 +9,16 @@ from ui import BONUS_IMAGES
 
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, color, pos, path):
+    def __init__(self, color, pos_in_path, path):
         pygame.sprite.Sprite.__init__(self)
 
         self.color = color
 
         self.path = path
-        self.pos_in_path = self.path.positions.index(pos)
+        self.pos_in_path = pos_in_path
 
         self.image = pygame.Surface(BALL_SIZE)
-        self.pos = pygame.math.Vector2(self.path.positions[self.pos_in_path])
+        self.pos = self.path.positions[self.pos_in_path]
         self.rect = self.image.get_rect(center=(round(self.pos.x),
                                                 round(self.pos.y)))
 
@@ -28,9 +28,9 @@ class Ball(pygame.sprite.Sprite):
     def set_bonus(self, bonus):
         self.bonus = bonus
 
-    def set_position(self, pos):
-        self.pos = pos
-        self.pos_in_path = self.path.positions.index(pos)
+    def set_position(self, pos_in_path):
+        self.pos_in_path = pos_in_path
+        self.pos = self.path.positions[self.pos_in_path]
         self.rect.center = (round(self.pos.x), round(self.pos.y))
 
     def update(self):
@@ -92,7 +92,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, level):
         pygame.sprite.Sprite.__init__(self)
 
-        if level == 2:
+        if level == 1:
             self.pos = (530, 330)
         else:
             self.pos = SCREEN_CENTER

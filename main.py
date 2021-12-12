@@ -23,6 +23,7 @@ class Level:
         self.finish = Finish(self.path, self.ball_generator.balls, self.score_manager)
         self.shooting_manager = ShootingManager(self.ball_generator, self.player, self.bonus_manager, self.score_manager)
 
+
 class Game:
     def __init__(self):
         pygame.init()

@@ -21,8 +21,8 @@ class BallGenerator:
             if len(self.balls) == 0 or \
                     self.balls[0].pos_in_path >= 2 * BALL_RADIUS // \
                     self.path.step:
-                self.balls.insert(0, Ball(random.choice(self.colors),
-                                          self.path.positions[0], self.path))
+                self.balls.insert(0, Ball(random.choice(self.colors), 0,
+                                          self.path))
                 self.number_of_generated += 1
 
     def move_stopped_ball(self, i):
@@ -92,5 +92,4 @@ class BallGenerator:
             self.balls[i].can_move = False
 
     def count_next_pos(self, index):
-        return self.path.positions[self.balls[index].pos_in_path +
-                                   2 * BALL_RADIUS // self.path.step]
+        return self.balls[index].pos_in_path + 2 * BALL_RADIUS // self.path.step
