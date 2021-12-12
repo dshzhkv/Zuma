@@ -1,15 +1,10 @@
-import pygame
-import random
-import os
-import math
-from Params import *
 from Path import Path
 from Sprites import *
 from BallGenerator import BallGenerator
 from ShootingManager import ShootingManager
 from BonusManager import BonusManager
 from ScoreManager import ScoreManager
-from ui import *
+from game.ui import *
 
 
 class Level:

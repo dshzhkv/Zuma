@@ -1,5 +1,5 @@
 from Params import *
-from Sprites import Ball, Bonus
+from Sprites import Ball
 import random
 import datetime
 
