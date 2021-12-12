@@ -1,5 +1,5 @@
 import math
-from Params import *
+from game.Params import *
 
 
 class Path:

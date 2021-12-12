@@ -1,5 +1,5 @@
-from Params import *
-from BonusManager import Bonus
+from game.Params import *
+from game.BonusManager import Bonus
 
 BONUS_IMAGES = {Bonus.Pause: {YELLOW: 'images/pause_yellow.png',
                               GREEN: 'images/pause_green.png',

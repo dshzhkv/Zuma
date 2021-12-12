@@ -1,5 +1,5 @@
-from Params import *
-from Sprites import Ball
+from game.Params import *
+from game.Sprites import Ball
 import random
 import datetime
 

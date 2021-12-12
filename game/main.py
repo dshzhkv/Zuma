@@ -1,9 +1,9 @@
-from Path import Path
-from Sprites import *
-from BallGenerator import BallGenerator
-from ShootingManager import ShootingManager
-from BonusManager import BonusManager
-from ScoreManager import ScoreManager
+from game.Path import Path
+from game.Sprites import *
+from game.BallGenerator import BallGenerator
+from game.ShootingManager import ShootingManager
+from game.BonusManager import BonusManager
+from game.ScoreManager import ScoreManager
 from game.ui import *
 
 

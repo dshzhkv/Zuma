@@ -1,6 +1,6 @@
-from Sprites import ShootingBall
-from Params import *
-from BonusManager import Bonus
+from game.Sprites import ShootingBall
+from game.Params import *
+from game.BonusManager import Bonus
 import random
 import datetime
 
