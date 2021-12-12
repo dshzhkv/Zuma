@@ -35,12 +35,4 @@ jobs:
           pytest tests.py
       - name: Check coverage
         run: |
-          pytest tests.py --cov=BallGenerator --cov-report html:cov_html
-      - name: Upload pytest test results
-        uses: actions/upload-artifact@v2
-        with:
-          name: pytest-results-${{ matrix.python-version }}
-          path: cov_html/test-results-${{ matrix.python-version }}.xml
-        # Use always() to always run this step to publish test results when there are test failures
-        if: ${{ always() }}
-
+          pytest tests.py --cov=BallGenerator
