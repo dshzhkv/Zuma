@@ -36,3 +36,4 @@ jobs:
       - name: Check coverage
         run: |
           pytest tests.py --cov=BallGenerator
+          pytest tests.py --cov=ShootingManager
