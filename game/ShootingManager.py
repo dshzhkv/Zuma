@@ -6,14 +6,14 @@ import datetime
 
 
 class ShootingManager:
-    def __init__(self, ball_generator, player, bonus_manager, score_manager):
+    def __init__(self, ball_generator, pos, bonus_manager, score_manager):
         self.ball_generator = ball_generator
         self.bonus_manager = bonus_manager
         self.score_manager = score_manager
-        self.player = player
 
+        self.pos = pos
         self.charged_ball = ShootingBall(random.choice(
-            self.ball_generator.colors), player.pos)
+            self.ball_generator.colors), self.pos)
 
         self.shooting_balls = []
 
@@ -33,7 +33,7 @@ class ShootingManager:
 
     def recharge(self):
         return ShootingBall(random.choice(
-            self.ball_generator.get_available_colors()), self.player.pos)
+            self.ball_generator.get_available_colors()), self.pos)
 
     def draw(self, screen):
         self.charged_ball.draw(screen)

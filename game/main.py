@@ -16,7 +16,7 @@ class Level:
         self.bonus_manager = BonusManager(self.ball_generator)
         self.player = Player(number)
         self.finish = Finish(self.path, self.ball_generator.balls, self.score_manager)
-        self.shooting_manager = ShootingManager(self.ball_generator, self.player, self.bonus_manager, self.score_manager)
+        self.shooting_manager = ShootingManager(self.ball_generator, self.player.pos, self.bonus_manager, self.score_manager)
 
 
 class Game:

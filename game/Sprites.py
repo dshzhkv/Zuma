@@ -1,6 +1,7 @@
 import math
 from game.Params import *
 from game.ui import BONUS_IMAGES
+import game.images
 
 
 class Ball(pygame.sprite.Sprite):
@@ -93,7 +94,7 @@ class Player(pygame.sprite.Sprite):
             self.pos = SCREEN_CENTER
 
         self.original_image = pygame.transform.smoothscale(
-            pygame.image.load("images/player.png"), PLAYER_SIZE)
+            pygame.image.load('images/player.png'), PLAYER_SIZE)
         self.original_image.set_colorkey(BLACK)
 
         self.image = self.original_image
