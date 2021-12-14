@@ -8,15 +8,14 @@ from game.ui import *
 
 
 class Level:
-    def __init__(self, number):
+    def __init__(self, number, score_manager):
         self.number = number
         self.path = Path(number)
-        self.score_manager = ScoreManager()
-        self.ball_generator = BallGenerator(self.path, number * 100, self.score_manager)
+        self.ball_generator = BallGenerator(self.path, number * 10, score_manager)
         self.bonus_manager = BonusManager(self.ball_generator)
         self.player = Player(number)
-        self.finish = Finish(self.path, self.ball_generator.balls, self.score_manager)
-        self.shooting_manager = ShootingManager(self.ball_generator, self.player.pos, self.bonus_manager, self.score_manager)
+        self.finish = Finish(self.path, self.ball_generator.balls, score_manager)
+        self.shooting_manager = ShootingManager(self.ball_generator, self.player.pos, self.bonus_manager, score_manager)
 
 
 class Game:
@@ -28,6 +27,7 @@ class Game:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
         self.level_num = 1
+        self.score_manager = ScoreManager()
         self.setup_new_game()
         self.is_quit = False
 
@@ -41,7 +41,7 @@ class Game:
         pygame.quit()
 
     def setup_new_game(self):
-        self.level = Level(self.level_num)
+        self.level = Level(self.level_num, self.score_manager)
         self.ui_manager = UiManager(self.screen, self.level)
 
     def play_game(self):
@@ -61,7 +61,7 @@ class Game:
             self.update_sprites()
             self.update_display(self.ui_manager.game_display)
 
-            if self.level.score_manager.is_win:
+            if self.score_manager.is_win:
                 game_finished = True
                 if self.level_num == 3:
                     self.win_game()
@@ -69,17 +69,19 @@ class Game:
                     self.continue_game(self.ui_manager.continue_btn,
                                        self.ui_manager.win_level_display)
                     self.level_num += 1
-            elif self.level.score_manager.is_lose:
+                    self.score_manager.setup_next_level()
+            elif self.score_manager.is_lose:
                 game_finished = True
-                self.level.score_manager.lives -= 1
-                if self.level.score_manager.lives == 0:
+                self.score_manager.lives -= 1
+                if self.score_manager.lives == 0:
                     self.continue_game(self.ui_manager.new_game_button,
                                        self.ui_manager.lose_game_display)
                     self.level_num = 1
-                    self.level.score_manager.lives = 2
+                    self.score_manager = ScoreManager()
                 else:
                     self.continue_game(self.ui_manager.start_level_again_btn,
                                        self.ui_manager.lose_level_display)
+                    self.score_manager.setup_next_level()
 
     def continue_game(self, button, window):
         game_continued = False
@@ -119,8 +121,8 @@ class Game:
     def update_display(self, display):
         self.ui_manager.draw_window(display)
         if display is self.ui_manager.game_display:
-            self.ui_manager.show_score(self.level.score_manager.score)
-            self.ui_manager.show_lives(self.level.score_manager.lives)
+            self.ui_manager.show_score(self.score_manager.score)
+            self.ui_manager.show_lives(self.score_manager.lives)
         pygame.display.update()
 
 

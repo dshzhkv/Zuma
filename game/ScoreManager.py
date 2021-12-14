@@ -11,7 +11,7 @@ class ScoreManager:
 
     def add_lives(self, score):
         for i in range(self.score + 1, self.score + score + 1):
-            if i % 500 == 0:
+            if i % 20 == 0:
                 self.lives += 1
 
     def win(self):
@@ -19,3 +19,7 @@ class ScoreManager:
 
     def lose(self):
         self.is_lose = True
+
+    def setup_next_level(self):
+        self.is_win = False
+        self.is_lose = False
