@@ -1,29 +1,29 @@
 from game.Params import *
 from game.BonusManager import Bonus
 
-BONUS_IMAGES = {Bonus.Pause: {YELLOW: 'images/pause_yellow.png',
-                              GREEN: 'images/pause_green.png',
-                              BLUE: 'images/pause_blue.png',
-                              RED: 'images/pause_red.png'},
-                Bonus.Reverse: {YELLOW: 'images/reverse_yellow.png',
-                                GREEN: 'images/reverse_green.png',
-                                BLUE: 'images/reverse_blue.png',
-                                RED: 'images/reverse_red.png'},
-                Bonus.Bomb: {YELLOW: 'images/bomb_yellow.png',
-                             GREEN: 'images/bomb_green.png',
-                             BLUE: 'images/bomb_blue.png',
-                             RED: 'images/bomb_red.png'},
-                Bonus.Speed: {YELLOW: 'images/speed_yellow.png',
-                              GREEN: 'images/speed_green.png',
-                              BLUE: 'images/speed_blue.png',
-                              RED: 'images/speed_red.png'}}
+BONUS_IMAGES = {Bonus.Pause: {YELLOW: 'game/images/pause_yellow.png',
+                              GREEN: 'game/images/pause_green.png',
+                              BLUE: 'game/images/pause_blue.png',
+                              RED: 'game/images/pause_red.png'},
+                Bonus.Reverse: {YELLOW: 'game/images/reverse_yellow.png',
+                                GREEN: 'game/images/reverse_green.png',
+                                BLUE: 'game/images/reverse_blue.png',
+                                RED: 'game/images/reverse_red.png'},
+                Bonus.Bomb: {YELLOW: 'game/images/bomb_yellow.png',
+                             GREEN: 'game/images/bomb_green.png',
+                             BLUE: 'game/images/bomb_blue.png',
+                             RED: 'game/images/bomb_red.png'},
+                Bonus.Speed: {YELLOW: 'game/images/speed_yellow.png',
+                              GREEN: 'game/images/speed_green.png',
+                              BLUE: 'game/images/speed_blue.png',
+                              RED: 'game/images/speed_red.png'}}
 
 
 class Button:
     def __init__(self, button_title, position, width=BTN_WIDTH,
                  height=BTN_HEIGHT, background_color=BROWN, font_color=TAUPE):
         self.title = button_title
-        self.font = pygame.font.Font('fonts/Azov.ttf', FONT_SIZE)
+        self.font = pygame.font.Font('game/fonts/Azov.ttf', FONT_SIZE)
         self.title_width, self.title_height = self.font.size(self.title)
         self.center = (position[0], position[1])
         self.width, self.height = width, height
@@ -37,7 +37,7 @@ class Button:
 
 class Label:
     def __init__(self, text, position, color=BROWN):
-        self.font = pygame.font.Font('fonts/Azov.ttf', FONT_SIZE)
+        self.font = pygame.font.Font('game/fonts/Azov.ttf', FONT_SIZE)
         self.color = color
         self.text = self.font.render(text, True, color)
         self.width, self.height = self.font.size(text)
@@ -132,7 +132,7 @@ class UiManager:
 
         self.put_label(Label(str(lives), (3 * WIDTH // 4 + 30, 40)))
         self.screen.blit(pygame.transform.smoothscale(
-            pygame.image.load("images/life.png"), (20, 20)),
+            pygame.image.load("game/images/life.png"), (20, 20)),
             (3 * WIDTH // 4, 30))
 
     def put_label(self, label, color=TAUPE):
