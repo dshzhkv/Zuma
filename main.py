@@ -11,7 +11,7 @@ class Level:
     def __init__(self, number, score_manager):
         self.number = number
         self.path = Path(number)
-        self.ball_generator = BallGenerator(self.path, number * 10, score_manager)
+        self.ball_generator = BallGenerator(self.path, number * 50, score_manager)
         self.bonus_manager = BonusManager(self.ball_generator)
         self.player = Player(number)
         self.finish = Finish(self.path, self.ball_generator.balls, score_manager)
@@ -63,25 +63,31 @@ class Game:
 
             if self.score_manager.is_win:
                 game_finished = True
-                if self.level_num == 3:
-                    self.win_game()
-                else:
-                    self.continue_game(self.ui_manager.continue_btn,
-                                       self.ui_manager.win_level_display)
-                    self.level_num += 1
-                    self.score_manager.setup_next_level()
+                self.handle_win()
             elif self.score_manager.is_lose:
                 game_finished = True
-                self.score_manager.lives -= 1
-                if self.score_manager.lives == 0:
-                    self.continue_game(self.ui_manager.new_game_button,
-                                       self.ui_manager.lose_game_display)
-                    self.level_num = 1
-                    self.score_manager = ScoreManager()
-                else:
-                    self.continue_game(self.ui_manager.start_level_again_btn,
-                                       self.ui_manager.lose_level_display)
-                    self.score_manager.setup_next_level()
+                self.handle_lose()
+
+    def handle_win(self):
+        if self.level_num == 3:
+            self.win_game()
+        else:
+            self.continue_game(self.ui_manager.continue_btn,
+                               self.ui_manager.win_level_display)
+            self.level_num += 1
+            self.score_manager.setup_next_level()
+
+    def handle_lose(self):
+        self.score_manager.take_live()
+        if self.score_manager.lose_game:
+            self.continue_game(self.ui_manager.new_game_button,
+                               self.ui_manager.lose_game_display)
+            self.level_num = 1
+            self.score_manager = ScoreManager()
+        else:
+            self.continue_game(self.ui_manager.start_level_again_btn,
+                               self.ui_manager.lose_level_display)
+            self.score_manager.setup_next_level()
 
     def continue_game(self, button, window):
         game_continued = False
